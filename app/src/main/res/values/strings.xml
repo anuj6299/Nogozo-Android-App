@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">StartUp</string>
+
+    <string-array name="cities">
+        <item>Select Your City</item>
+        <item>Agra</item>
+        <item>Delhi</item>
+        <item>Gwalior</item>
+        <item>Lucknow</item>
+    </string-array>
+
+</resources>
