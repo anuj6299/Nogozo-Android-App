@@ -1,4 +1,4 @@
-package com.startup.startup.ui.customer_intro
+package com.startup.startup.ui.userdetails
 
 import android.os.Bundle
 import android.view.LayoutInflater

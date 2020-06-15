@@ -21,7 +21,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideRetrofitInstance(): Retrofit? {
+    fun provideRetrofitInstance(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

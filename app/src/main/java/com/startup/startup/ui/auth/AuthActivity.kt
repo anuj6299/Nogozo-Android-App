@@ -1,67 +1,35 @@
 package com.startup.startup.ui.auth
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+import androidx.fragment.app.Fragment
 import com.startup.startup.R
-import com.startup.startup.SessionManager
 import com.startup.startup.ui.BaseActivity
-import com.startup.startup.ui.ViewModelFactory
-import com.startup.startup.ui.customer_intro.CustomerIntroActivity
-import javax.inject.Inject
+import com.startup.startup.ui.auth.customer.CustomerAuthFragment
+import com.startup.startup.ui.auth.vendor.VendorAuthFragment
+import com.startup.startup.util.Constants.USER_TYPE
+import com.startup.startup.util.Constants.userType_CUSTOMER
+import com.startup.startup.util.Constants.userType_VENDOR
 
-class AuthActivity : BaseActivity(), View.OnClickListener {
-
-    @Inject
-    lateinit var factory: ViewModelFactory
-
-    @Inject
-    lateinit var sessionManager: SessionManager
-
-    private lateinit var viewModel: AuthActivityViewModel
+class AuthActivity : BaseActivity() {
 
     private var userType: String? = null
-
-    private lateinit var emailField: TextInputEditText
-    private lateinit var passwordField: TextInputEditText
-    private lateinit var button: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        initViews()
-        viewModel = ViewModelProvider(this, factory)[AuthActivityViewModel::class.java]
+        userType = intent.getStringExtra(USER_TYPE)
 
-        userType = intent.getStringExtra("usertype")
+        if(userType.equals(userType_CUSTOMER))
+            startFragment(CustomerAuthFragment())
+        else if(userType.equals(userType_VENDOR))
+            startFragment(VendorAuthFragment())
+
     }
 
-    private fun initViews(){
-        emailField = findViewById(R.id.email_field)
-        passwordField = findViewById(R.id.password_field)
-        button = findViewById(R.id.login_button)
-        button.setOnClickListener(this)
-    }
-
-    override fun onClick(v: View?) {
-        when(v?.id){
-            R.id.login_button -> {
-                val username = emailField.text.toString()
-                val password = passwordField.text.toString()
-                if(username.equals("1") && password.equals("password")){
-                    if(userType!!.equals("customer")){
-                        val i: Intent = Intent(this, CustomerIntroActivity::class.java)
-                        startActivity(i)
-                        finish()
-                    }else if(userType!!.equals("shop")){
-                        Toast.makeText(this, "Coming Soon...", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
+    private fun startFragment(fragment: Fragment){
+        val ft = supportFragmentManager.beginTransaction()
+        ft.replace(R.id.auth_container, fragment)
+        ft.commit()
     }
 }

@@ -6,20 +6,25 @@ import com.google.gson.annotations.SerializedName
 class User {
     @SerializedName("userid")
     @Expose
-    private lateinit var userId: String
+    var userId: String = "-1"
 
     @SerializedName("usertype")
     @Expose
-    private lateinit var userType: String
+    var userType: String = "-1"
 
     @SerializedName("name")
     @Expose
-    private lateinit var name: String
+    var name: String = "-1"
 
-    constructor(userId: String, userType: String, name: String){
+    @SerializedName("profilelevel")
+    @Expose
+    var profileLevel: String  = "-1"
+
+    constructor(userId: String, userType: String, name: String, profileLevel: String){
         this.userId = userId
         this.userType = userType
         this.name = name
+        this.profileLevel = profileLevel
     }
 
     constructor()

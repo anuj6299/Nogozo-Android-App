@@ -6,11 +6,11 @@ import com.google.gson.annotations.SerializedName
 class City {
     @SerializedName("cityname")
     @Expose
-    private lateinit var cityName: String
+    lateinit var cityName: String
 
     @SerializedName("cityid")
     @Expose
-    private lateinit var cityId: String
+    lateinit var cityId: String
 
     constructor(cityName: String, cityId: String){
         this.cityId = cityId
