@@ -100,7 +100,8 @@ class ChooseOnMapActivity:
             R.id.fab -> {
                 val i = Intent()
                 target?.let { target ->
-                    i.putExtra("coordinate", target)
+                    i.putExtra("lat", target.latitude)
+                    i.putExtra("lon", target.longitude)
                     address?.let {address ->
                         if(address.isNotEmpty()){
                             i.putExtra("address", address)

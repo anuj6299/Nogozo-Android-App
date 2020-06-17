@@ -5,9 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.startup.startup.datamodels.User
 import com.startup.startup.ui.auth.AuthResource
+import com.startup.startup.util.Constants.LOADING
 import com.startup.startup.util.Constants.NAME
 import com.startup.startup.util.Constants.PROFILE_LEVEL
 import com.startup.startup.util.Constants.PROFILE_LEVEL_0
+import com.startup.startup.util.Constants.PROFILE_LEVEL_1
+import com.startup.startup.util.Constants.SUCCESS
 import com.startup.startup.util.Constants.USER_ID
 import com.startup.startup.util.Constants.USER_TYPE
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +24,7 @@ class SessionManager
 @Inject constructor(val preferences: SharedPreferences, val editPreferences: SharedPreferences.Editor) {
 
     private var cachedUser: MediatorLiveData<AuthResource<User>> = MediatorLiveData()
+    private var requestStatus: MediatorLiveData<String> = MediatorLiveData()
 
     init {
         cachedUser.value = AuthResource.loading()
@@ -83,6 +87,20 @@ class SessionManager
         CoroutineScope(IO).launch{
 
         }
+    }
+
+    fun updateUserProfile(cityId: String, areaId: String, address: String, lat: Double, lon: Double): LiveData<String>{
+        requestStatus.value = LOADING
+        CoroutineScope(IO).launch{
+            //make retrofit request
+            //TODO PRIORITY HIGH
+            editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_1).apply()
+            val user = cachedUser.value!!.data
+            user.profileLevel = PROFILE_LEVEL_1
+            cachedUser.postValue(AuthResource.authenticated(user))
+            requestStatus.postValue(SUCCESS)//FAKE
+        }
+        return requestStatus
     }
 
     /**

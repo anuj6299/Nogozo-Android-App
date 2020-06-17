@@ -10,11 +10,11 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.button.MaterialButton
 import com.startup.startup.R
 import com.startup.startup.SessionManager
-import com.startup.startup.datamodels.User
 import com.startup.startup.ui.BaseActivity
 import com.startup.startup.ui.ViewModelFactory
 import com.startup.startup.ui.auth.AuthActivity
 import com.startup.startup.ui.auth.AuthResource
+import com.startup.startup.ui.main.MainActivity
 import com.startup.startup.ui.userdetails.UserDetailsActivity
 import com.startup.startup.util.Constants.PROFILE_LEVEL_0
 import com.startup.startup.util.Constants.PROFILE_LEVEL_1
@@ -60,7 +60,7 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
 //    }
 
     private fun subscribeObserver(){
-        viewModel.getCurrentUser().observe(this, Observer<AuthResource<User>>{
+        viewModel.getCurrentUser().observe(this, Observer{
             when(it.Status){
                 AuthResource.AuthStatus.AUTHENTICATED -> {
                     val userType = it.data.userType
@@ -70,16 +70,19 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
                             i.putExtra(USER_TYPE, userType_CUSTOMER)
                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(i)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                         }else if(it.data.profileLevel == PROFILE_LEVEL_1){
-//                TODO(when userprofile is complete)
-//                val i = Intent(this@SplashActivity, MainActivity::class.java)
-//                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//                startActivity(i)
+                            val i = Intent(this@SplashActivity, MainActivity::class.java)
+                            i.putExtra(USER_TYPE, userType_CUSTOMER)
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(i)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                         }
 
                     }else if(userType == userType_VENDOR){
-                        //val i = Intent(this@SplashActivity, Activity::class.java)
-                        //startActivity(i)
+//                        val i = Intent(this@SplashActivity, Activity::class.java)
+//                        startActivity(i)
+//                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                         //TODO PRIORITY MEDIUM
                     }
                 }
@@ -102,6 +105,7 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
                 val i = Intent(this, AuthActivity::class.java)
                 i.putExtra(USER_TYPE, userType_CUSTOMER)
                 startActivity(i)
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
             R.id.to_shop_login -> {
                 Toast.makeText(this, "Coming Soon...", Toast.LENGTH_SHORT).show()
@@ -109,6 +113,7 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
 //                val i: Intent = Intent(this, AuthActivity::class.java)
 //                i.putExtra(USER_TYPE,"vendor")
 //                startActivity(i)
+//                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
             else -> {
                 Toast.makeText(this, "Nothing Click", Toast.LENGTH_SHORT).show()

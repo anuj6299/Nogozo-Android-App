@@ -11,11 +11,13 @@ import dagger.multibindings.IntoMap
 @Module
 abstract class UserDetailsViewModelModule {
 
+    @UserDetailsScope
     @Binds
     @IntoMap
     @ViewModelKey(CustomerDetailsFragmentViewModel::class)
     abstract fun bindCustomerViewModel(viewmodel: CustomerDetailsFragmentViewModel): ViewModel
 
+    @UserDetailsScope
     @Binds
     @IntoMap
     @ViewModelKey(VendorDetailsFragmentViewModel::class)

@@ -9,4 +9,7 @@
         <item>Lucknow</item>
     </string-array>
 
+    <string-array name="placeholder">
+        <item>Fetching Data…</item>
+    </string-array>
 </resources>
