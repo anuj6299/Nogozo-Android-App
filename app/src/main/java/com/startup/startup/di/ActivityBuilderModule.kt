@@ -1,15 +1,14 @@
 package com.startup.startup.di
 
 import com.startup.startup.di.auth.AuthFragmentModule
-import com.startup.startup.di.auth.AuthModule
 import com.startup.startup.di.auth.AuthScope
 import com.startup.startup.di.auth.AuthViewModelModule
 import com.startup.startup.di.main.MainFragmentModule
+import com.startup.startup.di.main.MainModule
 import com.startup.startup.di.main.MainScope
 import com.startup.startup.di.main.MainViewModelModule
 import com.startup.startup.di.splash.SplashViewModelModule
 import com.startup.startup.di.userdetails.UserDetailsFragmentModule
-import com.startup.startup.di.userdetails.UserDetailsModule
 import com.startup.startup.di.userdetails.UserDetailsScope
 import com.startup.startup.di.userdetails.UserDetailsViewModelModule
 import com.startup.startup.ui.BaseActivity
@@ -36,7 +35,6 @@ abstract class ActivityBuilderModule {
     @AuthScope
     @ContributesAndroidInjector(
         modules = [
-            AuthModule::class,
             AuthViewModelModule::class,
             AuthFragmentModule::class
         ]
@@ -47,8 +45,7 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(
         modules = [
             UserDetailsFragmentModule::class,
-            UserDetailsViewModelModule::class,
-            UserDetailsModule::class
+            UserDetailsViewModelModule::class
         ]
     )
     abstract fun contributeCustomerIntroActivity(): UserDetailsActivity
@@ -57,7 +54,8 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(
         modules = [
             MainFragmentModule::class,
-            MainViewModelModule::class
+            MainViewModelModule::class,
+            MainModule::class
         ]
     )
     abstract fun contributeMainActivity(): MainActivity

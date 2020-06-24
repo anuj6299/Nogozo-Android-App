@@ -2,7 +2,9 @@ package com.startup.startup.di.main
 
 import androidx.lifecycle.ViewModel
 import com.startup.startup.di.ViewModelKey
-import com.startup.startup.ui.main.customer.CustomerServiceFragmentViewModel
+import com.startup.startup.ui.main.customer.itemsInShop.ItemsInShopFragmentViewModel
+import com.startup.startup.ui.main.customer.shops.ShopListFragmentViewModel
+import com.startup.startup.ui.main.customer.services.CustomerServiceFragmentViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -14,5 +16,17 @@ abstract class MainViewModelModule{
     @Binds
     @IntoMap
     @ViewModelKey(CustomerServiceFragmentViewModel::class)
-    abstract fun bindCustomerViewModel(viewmodel: CustomerServiceFragmentViewModel): ViewModel
+    abstract fun bindCustomerServiceViewModel(viewModel: CustomerServiceFragmentViewModel): ViewModel
+
+    @MainScope
+    @Binds
+    @IntoMap
+    @ViewModelKey(ShopListFragmentViewModel::class)
+    abstract fun bindShopsViewModel(viewModel: ShopListFragmentViewModel): ViewModel
+
+    @MainScope
+    @Binds
+    @IntoMap
+    @ViewModelKey(ItemsInShopFragmentViewModel::class)
+    abstract fun bindItemInShopViewModel(viewModel: ItemsInShopFragmentViewModel): ViewModel
 }

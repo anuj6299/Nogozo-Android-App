@@ -4,10 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
 import com.startup.startup.R
 import com.startup.startup.SessionManager
 import com.startup.startup.ui.BaseActivity
@@ -22,6 +26,9 @@ import com.startup.startup.util.Constants.USER_TYPE
 import com.startup.startup.util.Constants.userType_CUSTOMER
 import com.startup.startup.util.Constants.userType_VENDOR
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity(), View.OnClickListener {
@@ -39,6 +46,9 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        //val a: FirebaseAuth = Firebase.auth
+        FirebaseApp.initializeApp(this)
 
         viewModel = ViewModelProvider(this, factory)[SplashActivityViewModel::class.java]
         viewPager = findViewById(R.id.splash_viewpager)
@@ -60,43 +70,40 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
 //    }
 
     private fun subscribeObserver(){
-        viewModel.getCurrentUser().observe(this, Observer{
-            when(it.Status){
+
+        CoroutineScope(IO).launch{
+            val auth = viewModel.getCurrentUser()
+
+            when(auth.status){
                 AuthResource.AuthStatus.AUTHENTICATED -> {
-                    val userType = it.data.userType
+                    val userType = viewModel.getUserType()
+                    println(userType)
                     if(userType == userType_CUSTOMER){
-                        if(it.data.profileLevel == PROFILE_LEVEL_0){
+                        val profileLevel  = viewModel.getProfileLevel()
+                        println(profileLevel)
+                        if(profileLevel == PROFILE_LEVEL_0){
                             val i = Intent(this@SplashActivity, UserDetailsActivity::class.java)
                             i.putExtra(USER_TYPE, userType_CUSTOMER)
                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(i)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                        }else if(it.data.profileLevel == PROFILE_LEVEL_1){
+                        }else if(profileLevel == PROFILE_LEVEL_1){
                             val i = Intent(this@SplashActivity, MainActivity::class.java)
                             i.putExtra(USER_TYPE, userType_CUSTOMER)
                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(i)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                         }
-
                     }else if(userType == userType_VENDOR){
-//                        val i = Intent(this@SplashActivity, Activity::class.java)
-//                        startActivity(i)
-//                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        //val i = Intent(this@SplashActivity, Activity::class.java)
+                        //startActivity(i)
+                        //overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                         //TODO PRIORITY MEDIUM
                     }
                 }
-                AuthResource.AuthStatus.LOADING -> {
-                    showProgressBar(true)
-                }
-                AuthResource.AuthStatus.NOT_AUTHENTICATED -> {
-                    showProgressBar(false)
-                }
-                AuthResource.AuthStatus.ERROR -> {
-                    showProgressBar(false)
-                }
+                AuthResource.AuthStatus.NOT_AUTHENTICATED -> {}
             }
-        })
+        }
     }
 
     override fun onClick(v: View?) {

@@ -13,8 +13,8 @@ import kotlin.collections.ArrayList
 
 class AreaListAdapter:BaseAdapter() {
 
-    private var OriginalList: List<Area> = List(1,init = { Area("Fetching ...","-1") })
-    private var filteredList: List<Area> = List(1,init = { Area("Locating","-1") })
+    private var OriginalList: List<Area> = ArrayList()
+    private var filteredList: List<Area> = ArrayList()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val v: View
@@ -58,7 +58,7 @@ class AreaListAdapter:BaseAdapter() {
                         }
                     }
                     if(results.isEmpty()){
-                        results.add(Area("Looks Like We Are Not In That Area","-1"))
+                        results.add(Area("Looks Like We Are Not In That Area", "-1"))
                     }
                     oReturn.values = results
                 }

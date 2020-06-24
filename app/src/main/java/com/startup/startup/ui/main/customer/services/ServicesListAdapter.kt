@@ -1,4 +1,4 @@
-package com.startup.startup.ui.main.customer
+package com.startup.startup.ui.main.customer.services
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +11,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.startup.startup.R
 import com.startup.startup.datamodels.Services
 import de.hdodenhof.circleimageview.CircleImageView
-import javax.inject.Inject
 
 class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickInterface): RecyclerView.Adapter<ServicesListAdapter.ServicesViewHolder>() {
 

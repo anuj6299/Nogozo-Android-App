@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/background"
     android:animateLayoutChanges="true">
 
     <Button
@@ -15,9 +15,10 @@
         android:text="LogOut"/>
 
     <TextView
+        android:id="@+id/customer_userdetails_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Your Details"
+        android:text="Enter Your Details"
         android:textSize="24sp"
         android:textColor="#000000"
         android:layout_marginTop="50dp"
@@ -25,16 +26,52 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/customer_userdetails_name_wrapper"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Name"
+            app:boxStrokeColor="@color/colorPrimary"
+            app:layout_constraintTop_toBottomOf="@+id/customer_userdetails_header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/customer_userdetails_name_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/customer_userdetails_phone_wrapper"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="Phone Number"
+        app:boxStrokeColor="@color/colorPrimary"
+        app:layout_constraintTop_toBottomOf="@+id/customer_userdetails_name_wrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/customer_userdetails_phone_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:maxLength="10"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/customer_userdetails_city_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="150dp"
+        android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/customer_userdetails_phone_wrapper"
         app:cardCornerRadius="3dp"
         app:cardElevation="3dp">
         <TextView
@@ -44,7 +81,7 @@
             android:textSize="24sp"
             android:textColor="#000000"
             android:text="Select Your City"
-            android:layout_margin="5dp"
+            android:layout_margin="8dp"
             android:drawableEnd="@drawable/ic_greater_symbol"
             />
     </androidx.cardview.widget.CardView>
@@ -53,7 +90,7 @@
         android:id="@+id/customer_userdetails_area_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/customer_userdetails_city_wrapper"
@@ -67,24 +104,32 @@
             android:textSize="24sp"
             android:textColor="#000000"
             android:text="Select Your Area"
-            android:layout_margin="5dp"
+            android:layout_margin="8dp"
             android:drawableEnd="@drawable/ic_greater_symbol"
             />
     </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/customer_userdetails_address_field"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/customer_userdetails_address_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Address\nSelect On Map"
-        android:textSize="16sp"
-        android:textColor="#000000"
-        android:drawableEnd="@drawable/ic_location"
-        android:layout_margin="20dp"
+        android:layout_margin="16dp"
+        app:cardElevation="3dp"
+        app:cardCornerRadius="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/customer_userdetails_area_wrapper"
-        android:visibility="invisible" />
+        android:visibility="invisible">
+        <TextView
+            android:id="@+id/customer_userdetails_address_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Address\nSelect On Map"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_margin="8dp"
+            android:drawableEnd="@drawable/ic_location" />
+    </androidx.cardview.widget.CardView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/customer_userdetails_confirm_button"
@@ -92,12 +137,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         style="@style/Widget.MaterialComponents.Button"
-        app:cornerRadius="20dp"
+        app:cornerRadius="16dp"
         android:text="CONFIRM"
         android:drawableEnd="@drawable/ic_check"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/customer_userdetails_address_field"
+        app:layout_constraintTop_toBottomOf="@+id/customer_userdetails_address_wrapper"
         android:visibility="invisible"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,9 +13,9 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/list_item_service_imageview"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"/>
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"/>
 
         <TextView
             android:id="@+id/list_item_service_text"
@@ -23,7 +24,7 @@
             android:textSize="24sp"
             android:textColor="#000000"
             android:text="Barber"
-            android:layout_margin="10dp"
+            android:layout_margin="8dp"
             android:layout_gravity="center"/>
 
     </LinearLayout>

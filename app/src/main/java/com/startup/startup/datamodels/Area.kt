@@ -4,11 +4,11 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class Area {
-    @SerializedName("areaname")
+    @SerializedName("area_name")
     @Expose
     lateinit var areaName: String
 
-    @SerializedName("areaid")
+    @SerializedName("area_id")
     @Expose
     lateinit var areaId: String
 

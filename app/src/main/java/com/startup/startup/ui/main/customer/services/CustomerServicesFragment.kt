@@ -1,4 +1,4 @@
-package com.startup.startup.ui.main.customer
+package com.startup.startup.ui.main.customer.services
 
 import android.os.Bundle
 import android.view.View
@@ -10,10 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.startup.startup.R
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
+import com.startup.startup.ui.main.Communicator
+import com.startup.startup.ui.main.DataResource
+import com.startup.startup.ui.main.MainActivity
 import com.startup.startup.util.VerticalSpacingItemDecoration
 import javax.inject.Inject
 
-class CustomerServicesFragment: BaseFragment(R.layout.fragment_services_customer), ServicesListAdapter.OnServicesClickInterface {
+class CustomerServicesFragment(private val communicator: Communicator): BaseFragment(R.layout.fragment_main_customer_services),
+    ServicesListAdapter.OnServicesClickInterface {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -44,20 +48,27 @@ class CustomerServicesFragment: BaseFragment(R.layout.fragment_services_customer
 
         viewModel.getServices().observe(viewLifecycleOwner, Observer {
             when(it.status){
-                ServiceResource.Status.SUCCESS -> {
+                DataResource.Status.SUCCESS -> {
                     adapter.setData(it.data)
+                    showProgressBar(false)
                 }
-                ServiceResource.Status.LOADING -> {
+                DataResource.Status.LOADING -> {
                     println("servicesFragment LOADING")
+                    showProgressBar(true)
                 }
-                ServiceResource.Status.ERROR -> {
+                DataResource.Status.ERROR -> {
                     println("servicesFragment ${it.message}")
+                    showProgressBar(false)
                 }
             }
         })
     }
 
+    private fun showProgressBar(visibility: Boolean){
+        (activity as MainActivity).showProgressBar(visibility)
+    }
+
     override fun onServiceClick(position: Int) {
-        Toast.makeText(context, "${adapter.getItemAt(position).serviceName} Clicked", Toast.LENGTH_SHORT).show()
+        communicator.onServiceSelected(adapter.getItemAt(position).serviceId)
     }
 }

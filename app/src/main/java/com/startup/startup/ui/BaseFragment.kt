@@ -9,7 +9,7 @@ import dagger.android.support.DaggerFragment
 
 abstract class BaseFragment
 constructor(
-    private @LayoutRes val layoutRes: Int
+    @LayoutRes private val layoutRes: Int
 ): DaggerFragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

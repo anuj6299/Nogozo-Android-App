@@ -3,56 +3,32 @@ package com.startup.startup.ui.auth
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 
-class AuthResource<T> {
+class AuthResource {
 
     @NonNull
-    var Status: AuthStatus
+    var status: AuthStatus
 
     @Nullable
-    var data: T
+    var message: String = ""
 
-    @Nullable
-    var message: String
+    constructor(@NonNull status: AuthStatus){
+        this.status = status
+    }
 
-    constructor(@NonNull Status: AuthStatus, @Nullable data: T, @Nullable message: String){
-        this.Status =Status
-        this.data = data
+    constructor(@NonNull status: AuthStatus, @Nullable message: String){
+        this.status = status
         this.message = message
     }
 
-    enum class AuthStatus{NOT_AUTHENTICATED, AUTHENTICATED, ERROR, LOADING}
+    enum class AuthStatus{NOT_AUTHENTICATED, AUTHENTICATED}
 
     companion object {
-        fun <T> authenticated(data: T): AuthResource<T> {
-            return AuthResource(
-                AuthStatus.AUTHENTICATED,
-                data,
-                "AUTHENTICATED"
-            )
+        fun authenticated(): AuthResource {
+            return AuthResource(AuthStatus.AUTHENTICATED)
         }
 
-        fun <T> error(msg: String, data: T): AuthResource<T> {
-            return AuthResource(
-                AuthStatus.ERROR,
-                data,
-                msg
-            )
-        }
-
-        fun <T> loading(): AuthResource<T> {
-            return AuthResource(
-                AuthStatus.LOADING,
-                null as T,
-                "LOADING"
-            )
-        }
-
-        fun <T> notAuthenticated(): AuthResource<T> {
-            return AuthResource(
-                AuthStatus.NOT_AUTHENTICATED,
-                null as T,
-                "NOT AUTHENTICATED"
-            )
+        fun notAuthenticated(): AuthResource {
+            return AuthResource(AuthStatus.NOT_AUTHENTICATED)
         }
     }
 }

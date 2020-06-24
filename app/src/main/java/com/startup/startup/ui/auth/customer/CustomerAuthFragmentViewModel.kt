@@ -1,10 +1,11 @@
 package com.startup.startup.ui.auth.customer
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.database.DatabaseReference
 import com.startup.startup.SessionManager
-import com.startup.startup.datamodels.User
-import com.startup.startup.ui.auth.AuthResource
+import com.startup.startup.datamodels.CustomerProfile
 import com.startup.startup.util.Constants.userType_CUSTOMER
 import javax.inject.Inject
 
@@ -14,15 +15,27 @@ constructor(
     private val sessionManager: SessionManager
 ): ViewModel() {
 
-    fun authenticateUser(userId: String, password: String, userType: String){
-        sessionManager.authenticateUser(userId, password, userType)
+    fun login(email: String, password: String): Task<AuthResult> {
+        return sessionManager.login(email, password)
     }
 
-    fun registerUser(name: String, userId: String, password: String){
-        sessionManager.registerUser(name, userId, password, userType_CUSTOMER)
+    fun register( email: String, password: String): Task<AuthResult>{
+        return sessionManager.register(email, password)
     }
 
-    fun getCachedUser(): LiveData<AuthResource<User>> {
-        return sessionManager.getCurrentUser()
+    fun getUserProfile(): DatabaseReference{
+        return sessionManager.getUserProfile()
+    }
+
+    fun saveProfileToLocal(profile: CustomerProfile){
+        sessionManager.saveCustomerProfileToLocal(profile)
+    }
+
+    fun saveOnRegistered(email: String){
+        sessionManager.saveOnRegistered(email, userType_CUSTOMER)
+    }
+
+    fun saveOnLogged(email: String){
+        sessionManager.saveOnLogged(email, userType_CUSTOMER)
     }
 }

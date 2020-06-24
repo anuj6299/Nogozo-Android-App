@@ -3,14 +3,20 @@ package com.startup.startup.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.NonNull
 import com.bumptech.glide.request.RequestOptions
 import com.startup.startup.R
 import com.startup.startup.util.Constants
 import dagger.Module
 import dagger.Provides
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -50,4 +56,10 @@ class AppModule {
     fun provideSharedPreferencesEditor(application: Application): SharedPreferences.Editor{
         return application.getSharedPreferences("preference", Context.MODE_PRIVATE).edit()
     }
+
+//    @Provides
+//    @Singleton
+//    fun provideOkHttpClient(): OkHttpClient{
+//        return
+//    }
 }

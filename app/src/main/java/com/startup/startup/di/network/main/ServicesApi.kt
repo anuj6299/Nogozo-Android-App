@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface ServicesApi {
 
-    @GET
+    @GET("service/")
     fun getServices(): Flowable<List<Services>>
 }

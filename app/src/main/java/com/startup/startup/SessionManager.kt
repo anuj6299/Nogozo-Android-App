@@ -1,125 +1,113 @@
 package com.startup.startup
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import com.startup.startup.datamodels.User
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.ktx.Firebase
+import com.startup.startup.datamodels.CustomerProfile
+import com.startup.startup.network.Auth
+import com.startup.startup.network.Database
 import com.startup.startup.ui.auth.AuthResource
-import com.startup.startup.util.Constants.LOADING
+import com.startup.startup.util.Constants.ADDRESS
+import com.startup.startup.util.Constants.AREA_ID
+import com.startup.startup.util.Constants.AREA_NAME
+import com.startup.startup.util.Constants.CITY_ID
+import com.startup.startup.util.Constants.CITY_NAME
+import com.startup.startup.util.Constants.EMAIL
 import com.startup.startup.util.Constants.NAME
+import com.startup.startup.util.Constants.PHONE
 import com.startup.startup.util.Constants.PROFILE_LEVEL
 import com.startup.startup.util.Constants.PROFILE_LEVEL_0
 import com.startup.startup.util.Constants.PROFILE_LEVEL_1
-import com.startup.startup.util.Constants.SUCCESS
-import com.startup.startup.util.Constants.USER_ID
 import com.startup.startup.util.Constants.USER_TYPE
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SessionManager
-@Inject constructor(val preferences: SharedPreferences, val editPreferences: SharedPreferences.Editor) {
+@Inject constructor(private val preferences: SharedPreferences, private val editPreferences: SharedPreferences.Editor) {
 
-    private var cachedUser: MediatorLiveData<AuthResource<User>> = MediatorLiveData()
-    private var requestStatus: MediatorLiveData<String> = MediatorLiveData()
-
-    init {
-        cachedUser.value = AuthResource.loading()
-
-        CoroutineScope(IO).launch {
-            val logged: Boolean = preferences.getBoolean("logged",false)
-            if(logged){
-                val user = User(
-                    preferences.getString(USER_ID,"")!!,
-                    preferences.getString(USER_TYPE,"")!!,
-                    preferences.getString(NAME,"")!!,
-                    preferences.getString(PROFILE_LEVEL,"")!!
-                )
-                cachedUser.postValue(AuthResource.authenticated(user))
-            }else {
-                cachedUser.postValue(AuthResource.notAuthenticated())
-            }
-        }
+    fun getCurrentUser(): AuthResource{
+        val auth = FirebaseAuth.getInstance()
+        if(auth.currentUser != null)
+            return AuthResource.authenticated()
+        return AuthResource.notAuthenticated()
     }
 
-    fun authenticateUser(userid: String, password: String, userType: String){
-        cachedUser.value = AuthResource.loading()
-        //Fake Auth
-        //TODO PRIORITY HIGH
-        //call retrofit get method
-        //put int shared preference
-        //
-        //***********WILL RETURN (USERTYPE,NAME,PrefferedCity) ON SUCCESS***********
-        CoroutineScope(IO).launch {
-            //editPreferences.putString("name",name).apply()
-            //editPreferences.putString("prefferedcity",prefferedCity).apply()
-            //cachedUser.postValue(AuthResource.authenticated(User(userid,userType,name)))
-            val user = fakeLogin(userid, userType, password)
-            if(user.userId == "-1" || userType == "-1" || user.name == "-1" || user.profileLevel == "-1"){
-                cachedUser.postValue(AuthResource.notAuthenticated())
-            }else{
-                editPreferences.putBoolean("logged", true).apply()
-                editPreferences.putString(USER_ID, user.userId).apply()
-                editPreferences.putString(USER_TYPE, user.userType).apply()
-                editPreferences.putString(PROFILE_LEVEL, user.profileLevel).apply()
-                cachedUser.postValue(AuthResource.authenticated(user))
-            }
-        }
-    }
-
-    private fun fakeLogin(userid: String, userType: String, password: String): User{
-        if(userid == "1" && password == "password"){
-            return User(userid,userType,"fake name", PROFILE_LEVEL_0)
-        }else{
-            return User("-1","-1","-1","-1")
-        }
-    }
-
-    fun registerUser(name: String, userid: String, password: String, userType: String){
-        //Fake Auth
-        //TODO PRIORITY HIGH
-        //call retrofit post method
-
-        //authenticate(userid)
-        CoroutineScope(IO).launch{
-
-        }
-    }
-
-    fun updateUserProfile(cityId: String, areaId: String, address: String, lat: Double, lon: Double): LiveData<String>{
-        requestStatus.value = LOADING
-        CoroutineScope(IO).launch{
-            //make retrofit request
-            //TODO PRIORITY HIGH
-            editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_1).apply()
-            val user = cachedUser.value!!.data
-            user.profileLevel = PROFILE_LEVEL_1
-            cachedUser.postValue(AuthResource.authenticated(user))
-            requestStatus.postValue(SUCCESS)//FAKE
-        }
-        return requestStatus
-    }
-
-    /**
-     *
-     * COMPLETED
-     *
-     * */
-    fun getCurrentUser(): LiveData<AuthResource<User>>{
-        return cachedUser
-    }
-
-    /**
-     *
-     * COMPLETED
-     *
-     * */
-    fun logout(){
+     fun logout(){
         editPreferences.clear().apply()
-        cachedUser.value = AuthResource.notAuthenticated()
+        FirebaseAuth.getInstance().signOut()
     }
 
+    fun getUserType(): String{
+        return preferences.getString(USER_TYPE, "-1")!!
+    }
+
+    fun getAreaId(): String{
+        return preferences.getString(AREA_ID,"-1")!!
+    }
+
+    fun getProfileLevel(): String{
+        return preferences.getString(PROFILE_LEVEL, PROFILE_LEVEL_0)!!
+    }
+
+    fun login(email: String, password: String): Task<AuthResult> {
+        return Auth().login(email, password)
+    }
+
+    fun register(email: String, password: String): Task<AuthResult> {
+        return Auth().register(email, password)
+    }
+
+    fun getUserProfile(): DatabaseReference{
+        println(getUserType())
+        return Database().getUserProfile(getUserType())
+    }
+
+    fun saveCustomerProfileToLocal(profile: CustomerProfile){
+        CoroutineScope(Dispatchers.Default).launch {
+            editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_1).apply()
+            editPreferences.putString(EMAIL, profile.email).apply()
+            editPreferences.putString(CITY_ID, profile.cityid).apply()
+            editPreferences.putString(CITY_NAME, profile.cityname).apply()
+            editPreferences.putString(AREA_ID, profile.areaid).apply()
+            editPreferences.putString(AREA_NAME, profile.areaname).apply()
+            editPreferences.putString(NAME, profile.name).apply()
+            editPreferences.putString(ADDRESS, profile.address).apply()
+            editPreferences.putString(PHONE, profile.phone).apply()
+        }
+    }
+
+    fun saveCustomerProfileToLocal(map: HashMap<String, Any>){
+        CoroutineScope(Dispatchers.Default).launch {
+            editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_1).apply()
+            editPreferences.putString(CITY_ID, map["cityid"] as String).apply()
+            editPreferences.putString(CITY_NAME, map["cityname"] as String).apply()
+            editPreferences.putString(AREA_ID, map["areaid"] as String).apply()
+            editPreferences.putString(AREA_NAME, map["areaname"] as String).apply()
+            editPreferences.putString(NAME, map["name"] as String).apply()
+            editPreferences.putString(ADDRESS, map["address"] as String).apply()
+            editPreferences.putString(PHONE, map["phone"] as String).apply()
+        }
+    }
+
+    fun saveOnRegistered(email: String, userType: String){
+        CoroutineScope(Dispatchers.Default).launch{
+            editPreferences.putString(EMAIL, email).apply()
+            editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_0).apply()
+            editPreferences.putString(USER_TYPE, userType).apply()
+            Database().setUserProfileOnRegistered(userType, CustomerProfile(email, PROFILE_LEVEL_0))
+        }
+    }
+
+    fun saveOnLogged(email: String, userType: String){
+        editPreferences.putString(EMAIL, email).apply()
+        editPreferences.putString(USER_TYPE, userType).apply()
+    }
 }

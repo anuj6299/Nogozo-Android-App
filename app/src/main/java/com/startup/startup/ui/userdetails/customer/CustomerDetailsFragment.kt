@@ -12,27 +12,25 @@ import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.startup.startup.R
 import com.startup.startup.datamodels.Area
 import com.startup.startup.datamodels.City
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ChooseOnMapActivity
 import com.startup.startup.ui.ViewModelFactory
-import com.startup.startup.ui.auth.AuthResource
+import com.startup.startup.ui.main.DataResource
 import com.startup.startup.ui.main.MainActivity
-import com.startup.startup.ui.splash.SplashActivity
 import com.startup.startup.ui.userdetails.AreaListAdapter
 import com.startup.startup.ui.userdetails.CityListAdapter
 import com.startup.startup.ui.userdetails.CityResource
 import com.startup.startup.util.Constants.CHOOSE_ON_MAP_REQUEST_CODE
 import com.startup.startup.util.Constants.DIALOG_TYPE_AREA
 import com.startup.startup.util.Constants.DIALOG_TYPE_CITY
-import com.startup.startup.util.Constants.ERROR
-import com.startup.startup.util.Constants.LOADING
 import com.startup.startup.util.Constants.PROFILE_LEVEL_1
-import com.startup.startup.util.Constants.SUCCESS
 import com.startup.startup.util.Constants.USER_TYPE
 import com.startup.startup.util.Constants.userType_CUSTOMER
+import com.startup.startup.util.Helper
 import javax.inject.Inject
 
 
@@ -47,6 +45,9 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
     private lateinit var areaSpinner: TextView
     private lateinit var cityCard: CardView
     private lateinit var areaCard: CardView
+    private lateinit var nameField: TextInputEditText
+    private lateinit var phoneField: TextInputEditText
+    private lateinit var addressCard: CardView
     private lateinit var confirmButton: MaterialButton
     private var selectedCity: City? = null
     private var selectedArea: Area? = null
@@ -63,6 +64,9 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
 
         areaCard = view.findViewById(R.id.customer_userdetails_area_wrapper)
         cityCard = view.findViewById(R.id.customer_userdetails_city_wrapper)
+        addressCard = view.findViewById(R.id.customer_userdetails_address_wrapper)
+        nameField = view.findViewById(R.id.customer_userdetails_name_field)
+        phoneField = view.findViewById(R.id.customer_userdetails_phone_field)
         citySpinner = view.findViewById(R.id.customer_userdetails_city_view)
         citySpinner.setOnClickListener(this)
         areaSpinner = view.findViewById(R.id.customer_userdetails_area_view)
@@ -70,33 +74,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
         confirmButton = view.findViewById(R.id.customer_userdetails_confirm_button)
         confirmButton.setOnClickListener(this)
 
-        subscribeObserver()
-    }
-
-    private fun subscribeObserver(){
-        viewModel.getCurrentUser().removeObservers(viewLifecycleOwner)
-
-        viewModel.getCurrentUser().observe(viewLifecycleOwner, Observer {
-            when(it.Status){
-                AuthResource.AuthStatus.AUTHENTICATED -> {
-                    if(it.data.profileLevel == PROFILE_LEVEL_1){
-                        val i = Intent(activity, MainActivity::class.java)
-                        i.putExtra(USER_TYPE, userType_CUSTOMER)
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(i)
-                    }
-                }
-                AuthResource.AuthStatus.LOADING -> {
-                    println("UserDetails: Customer: Loading")
-                }
-                AuthResource.AuthStatus.NOT_AUTHENTICATED -> {
-                    val i = Intent(activity, SplashActivity::class.java)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(i)
-                }
-                AuthResource.AuthStatus.ERROR -> {}
-            }
-        })
     }
 
     override fun onClick(v: View?) {
@@ -116,7 +93,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
             }
             R.id.customer_userdetails_confirm_button -> {
                 updateUserProfile()
-                //Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -138,7 +114,7 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
     private fun onAreaSelected(area: Area){
         selectedArea = area
         areaSpinner.text = area.areaName
-        addressField.visibility = View.VISIBLE
+        addressCard.visibility = View.VISIBLE
         checkAndShowButton()
     }
 
@@ -198,12 +174,10 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
                         println("userDetails: success ${it.data}")
                     }
                     CityResource.CityStatus.LOADING -> {
-                        println("userDetails: loading")
-
                     }
                     CityResource.CityStatus.ERROR -> {
                         progressBar.visibility = View.INVISIBLE
-                        println("userDetails: error")
+                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
                     }
                 }
             })
@@ -218,7 +192,7 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
                         searchView.setQuery("",false)
                         val adapter = AreaListAdapter()
                         listView.adapter = adapter
-                        adapter.setOriginalList(it.data.areas)
+                        adapter.setOriginalList(it.data)
 
                         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -241,12 +215,11 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
                         println("userDetails: success ${it.data}")
                     }
                     CityResource.CityStatus.LOADING -> {
-                        println("userDetails: loading")
-
+                        progressBar.visibility = View.VISIBLE
                     }
                     CityResource.CityStatus.ERROR -> {
                         progressBar.visibility = View.INVISIBLE
-                        println("userDetails: error")
+                        Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_LONG).show()
                     }
                 }
             })
@@ -265,34 +238,38 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
     }
 
     private fun updateUserProfile(){
-        viewModel.updateUserProfile(
-            selectedCity!!.cityId,
-            selectedArea!!.areaId,
-            selectedAddress!!,
-            selectedLat!!,
-            selectedLon!!
-        ).removeObservers(viewLifecycleOwner)
 
-        viewModel.updateUserProfile(selectedCity!!.cityId,
-            selectedArea!!.areaId,
-            selectedAddress!!,
-            selectedLat!!,
-            selectedLon!!
-        ).observe(viewLifecycleOwner, Observer {
-            when(it!!){
-                LOADING -> {
-                    println("customer: UserDetails: UpdateUser: LOADING")
-                }
-                SUCCESS -> {
-                    val i = Intent(activity, MainActivity::class.java)
-                    i.putExtra(USER_TYPE, userType_CUSTOMER)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(i)
-                }
-                ERROR -> {
-                    println("customer: UserDetails: UpdateUser: ERROR")
-                }
+        val name = nameField.text.toString()
+        val phone = phoneField.text.toString()
+
+        if(name.isEmpty()){
+            Toast.makeText(context, "Please Enter Name", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(phone.isEmpty() || Helper.isPhoneNumber(phone)){
+            Toast.makeText(context, "Please Enter Valid Number", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val map: HashMap<String, Any> = HashMap()
+        map["name"] = name
+        map["phone"] = phone
+        map["cityname"] = selectedCity!!.cityName
+        map["cityid"] = selectedCity!!.cityId
+        map["areaname"] = selectedArea!!.areaName
+        map["areaid"] = selectedArea!!.areaId
+        map["address"] = selectedAddress!!
+        map["profilelevel"] = PROFILE_LEVEL_1
+
+        viewModel.updateUserProfile(map).addOnCompleteListener{
+            if(it.isSuccessful){
+                viewModel.saveProfileToLocal(map)
+                val i = Intent(context, MainActivity::class.java)
+                i.putExtra(USER_TYPE, userType_CUSTOMER)
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(i)
             }
-        })
+        }
     }
 }

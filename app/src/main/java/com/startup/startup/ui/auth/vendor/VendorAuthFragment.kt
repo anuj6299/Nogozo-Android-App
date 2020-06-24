@@ -33,35 +33,34 @@ class VendorAuthFragment: BaseFragment(R.layout.fragment_auth_vendor),View.OnCli
 
         viewModel = ViewModelProvider(this, factory)[VendorAuthFragmentViewModel::class.java]
 
-        viewModel.getCachedUser().removeObservers(viewLifecycleOwner)
-
-        viewModel.getCachedUser().observe(viewLifecycleOwner, Observer{
-            when(it.Status){
-                AuthResource.AuthStatus.AUTHENTICATED -> {
-                    //to next activity on user status
-                    println("authenticated")
-                }
-                AuthResource.AuthStatus.LOADING -> {
-                    //show loading status
-                    println("loading123")
-                }
-                AuthResource.AuthStatus.NOT_AUTHENTICATED -> {
-                    //not authenticated
-                    println("not authenticated 123")
-                }
-                AuthResource.AuthStatus.ERROR -> {
-                    // error
-                    println("error")
-                }
-            }
-        })
+//        viewModel.getCachedUser().removeObservers(viewLifecycleOwner)
+//
+//        viewModel.getCachedUser().observe(viewLifecycleOwner, Observer{
+//            when(it.Status){
+//                AuthResource.AuthStatus.AUTHENTICATED -> {
+//                    //to next activity on user status
+//                    println("authenticated")
+//                }
+//                AuthResource.AuthStatus.LOADING -> {
+//                    //show loading status
+//                    println("loading123")
+//                }
+//                AuthResource.AuthStatus.NOT_AUTHENTICATED -> {
+//                    //not authenticated
+//                    println("not authenticated 123")
+//                }
+//                AuthResource.AuthStatus.ERROR -> {
+//                    // error
+//                    println("error")
+//                }
+//            }
+//        })
     }
 
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.customer_login_button -> {
-                viewModel.authenticateUser(emailField.text.toString(), passwordField.text.toString(), Constants.userType_VENDOR
-                )
+                //viewModel.authenticateUser(emailField.text.toString(), passwordField.text.toString(), Constants.userType_VENDOR)
             }
         }
     }
