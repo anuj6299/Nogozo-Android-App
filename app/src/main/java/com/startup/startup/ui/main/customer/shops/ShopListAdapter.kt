@@ -4,10 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.startup.startup.R
 import com.startup.startup.datamodels.Shop
-import de.hdodenhof.circleimageview.CircleImageView
+import com.startup.startup.network.Database
 
 class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): RecyclerView.Adapter<ShopListAdapter.ShopsViewHolder>() {
 
@@ -24,7 +28,38 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
 
     override fun onBindViewHolder(holder: ShopsViewHolder, position: Int) {
         holder.name.text = dataList[position].shopName
-        holder.distance.text = ""//dataList[position].distance
+        //GET SHOP ADDRESS
+        if(dataList[position].shopAddress == null){
+            Database().getShopAddress(dataList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    dataList[position].shopAddress = snapshot.value as String
+                    notifyDataSetChanged()
+                }
+            })
+        }else{
+            holder.address.text = dataList[position].shopAddress
+        }
+        //GET SHOP STATUS
+        if(dataList[position].shopAddress == null){
+            Database().getShopStatus(dataList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    dataList[position].shopCurrentStatus = snapshot.value as String
+                    notifyDataSetChanged()
+                }
+            })
+        }else{
+            if(dataList[position].shopCurrentStatus.equals("open", true))
+                holder.available.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.green))
+            else
+                holder.available.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.red))
+            holder.available.text = dataList[position].shopCurrentStatus
+        }
     }
 
     fun setItemList(dataList: ArrayList<Shop>){
@@ -43,7 +78,8 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         }
 
         var name: TextView = itemView.findViewById(R.id.list_item_shop_name)
-        var distance: TextView = itemView.findViewById(R.id.list_item_shop_distance)
+        var address: TextView = itemView.findViewById(R.id.list_item_shop_address)
+        var available: TextView = itemView.findViewById(R.id.list_item_shop_available)
 
         override fun onClick(v: View?) {
             onShopClickInterface.onShopClick(adapterPosition)

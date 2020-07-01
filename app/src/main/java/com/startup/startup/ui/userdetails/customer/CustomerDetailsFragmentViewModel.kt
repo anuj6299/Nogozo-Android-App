@@ -26,10 +26,6 @@ constructor(
     private var cities: MediatorLiveData<CityResource<List<City>>> = MediatorLiveData()
     private var areas: MediatorLiveData<CityResource<List<Area>>> = MediatorLiveData()
 
-    fun logOut(){
-        sessionManager.logout()
-    }
-
     fun getCities(): LiveData<CityResource<List<City>>>{
         cities.value = CityResource.loading()
 

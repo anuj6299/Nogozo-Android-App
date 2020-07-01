@@ -8,14 +8,21 @@
     app:cardElevation="3dp">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+<!--        <de.hdodenhof.circleimageview.CircleImageView-->
+<!--            android:id="@+id/list_item_service_imageview"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:layout_margin="8dp"/>-->
+
+        <ImageView
             android:id="@+id/list_item_service_imageview"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:contentDescription="service image" />
 
         <TextView
             android:id="@+id/list_item_service_text"
@@ -23,7 +30,6 @@
             android:layout_height="wrap_content"
             android:textSize="24sp"
             android:textColor="#000000"
-            android:text="Barber"
             android:layout_margin="8dp"
             android:layout_gravity="center"/>
 

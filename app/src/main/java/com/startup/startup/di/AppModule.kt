@@ -38,13 +38,13 @@ class AppModule {
             .build()
     }
 
-    @Singleton
-    @Provides
-    fun provideRequestOptions(): RequestOptions {
-        return RequestOptions
-            .placeholderOf(R.drawable.ic_launcher_background)
-            .error(R.drawable.ic_location)
-    }
+//    @Singleton
+//    @Provides
+//    fun provideRequestOptions(): RequestOptions {
+//        return RequestOptions
+//            .placeholderOf(R.drawable.ic_launcher_background)
+//            .error(R.drawable.ic_location)
+//    }
     @Provides
     @Singleton
     fun provideSharedPreferences(application: Application): SharedPreferences {

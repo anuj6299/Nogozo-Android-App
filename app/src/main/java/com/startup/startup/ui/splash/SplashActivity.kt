@@ -8,10 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
-import com.google.firebase.ktx.Firebase
 import com.startup.startup.R
 import com.startup.startup.SessionManager
 import com.startup.startup.ui.BaseActivity
@@ -47,7 +43,6 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        //val a: FirebaseAuth = Firebase.auth
         FirebaseApp.initializeApp(this)
 
         viewModel = ViewModelProvider(this, factory)[SplashActivityViewModel::class.java]
@@ -77,10 +72,8 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
             when(auth.status){
                 AuthResource.AuthStatus.AUTHENTICATED -> {
                     val userType = viewModel.getUserType()
-                    println(userType)
                     if(userType == userType_CUSTOMER){
                         val profileLevel  = viewModel.getProfileLevel()
-                        println(profileLevel)
                         if(profileLevel == PROFILE_LEVEL_0){
                             val i = Intent(this@SplashActivity, UserDetailsActivity::class.java)
                             i.putExtra(USER_TYPE, userType_CUSTOMER)
@@ -95,10 +88,20 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                         }
                     }else if(userType == userType_VENDOR){
-                        //val i = Intent(this@SplashActivity, Activity::class.java)
-                        //startActivity(i)
-                        //overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                        //TODO PRIORITY MEDIUM
+                        val profileLevel = viewModel.getProfileLevel()
+                        if(profileLevel == PROFILE_LEVEL_0){
+                            val i = Intent(this@SplashActivity, UserDetailsActivity::class.java)
+                            i.putExtra(USER_TYPE, userType_VENDOR)
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(i)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        }else if(profileLevel == PROFILE_LEVEL_1){
+                            val i = Intent(this@SplashActivity, MainActivity::class.java)
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            i.putExtra(USER_TYPE, userType_VENDOR)
+                            startActivity(i)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        }
                     }
                 }
                 AuthResource.AuthStatus.NOT_AUTHENTICATED -> {}
@@ -115,12 +118,10 @@ class SplashActivity : BaseActivity(), View.OnClickListener {
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
             R.id.to_shop_login -> {
-                Toast.makeText(this, "Coming Soon...", Toast.LENGTH_SHORT).show()
-                return
-//                val i: Intent = Intent(this, AuthActivity::class.java)
-//                i.putExtra(USER_TYPE,"vendor")
-//                startActivity(i)
-//                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                val i = Intent(this, AuthActivity::class.java)
+                i.putExtra(USER_TYPE, userType_VENDOR)
+                startActivity(i)
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
             else -> {
                 Toast.makeText(this, "Nothing Click", Toast.LENGTH_SHORT).show()

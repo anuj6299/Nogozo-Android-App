@@ -28,7 +28,13 @@ object Constants {
     const val DIALOG_TYPE_CITY = "city"
     const val DIALOG_TYPE_AREA = "area"
     const val SERVICE_ID = "serviceid"
+    const val SERVICE_NAME = "servicename"
     const val SHOP_ID = "shopid"
+    const val SHOP_NAME = "shopname"
+
+    const val ORDER_TYPE = "ordertype"
+    const val CURRENT_ORDER = "currentorder"
+    const val PAST_ORDER = "pastorder"
 
     const val LOADING = "LOADING"
     const val SUCCESS = "SUCCESS"

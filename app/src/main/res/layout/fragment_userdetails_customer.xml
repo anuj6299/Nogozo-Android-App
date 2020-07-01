@@ -6,14 +6,6 @@
     android:background="@drawable/background"
     android:animateLayoutChanges="true">
 
-    <Button
-        android:id="@+id/customer_userdetails_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="LogOut"/>
-
     <TextView
         android:id="@+id/customer_userdetails_header"
         android:layout_width="wrap_content"
@@ -43,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/customer_userdetails_phone_wrapper"

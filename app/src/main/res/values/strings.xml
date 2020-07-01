@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StartUp</string>
+    <string name="app_name">Nogozo</string>
 
     <string-array name="cities">
         <item>Select Your City</item>

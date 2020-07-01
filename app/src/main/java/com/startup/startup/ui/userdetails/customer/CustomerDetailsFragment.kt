@@ -60,7 +60,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
         viewModel = ViewModelProvider(this, factory)[CustomerDetailsFragmentViewModel::class.java]
         addressField = view.findViewById(R.id.customer_userdetails_address_field)
         addressField.setOnClickListener(this)
-        view.findViewById<Button>(R.id.customer_userdetails_logout).setOnClickListener(this)
 
         areaCard = view.findViewById(R.id.customer_userdetails_area_wrapper)
         cityCard = view.findViewById(R.id.customer_userdetails_city_wrapper)
@@ -81,9 +80,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
             R.id.customer_userdetails_address_field -> {
                 val i = Intent(activity, ChooseOnMapActivity::class.java)
                 startActivityForResult(i, CHOOSE_ON_MAP_REQUEST_CODE)
-            }
-            R.id.customer_userdetails_logout -> {
-                viewModel.logOut()
             }
             R.id.customer_userdetails_city_view -> {
                 openDialogForSelecting(DIALOG_TYPE_CITY)

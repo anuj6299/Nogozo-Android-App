@@ -2,8 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="3dp"
-    app:cardElevation="3dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -15,19 +15,23 @@
             android:id="@+id/list_item_shop_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TEST TEXT"
             android:textSize="24sp"
-            android:textColor="#000000"
-            android:layout_gravity="center"/>
+            android:textColor="@color/black"/>
 
         <TextView
-            android:id="@+id/list_item_shop_distance"
+            android:id="@+id/list_item_shop_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="10 m away"
             android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_gravity="center"/>
+            android:textColor="@color/black"
+            android:drawableStart="@drawable/ic_location"/>
+
+        <TextView
+            android:id="@+id/list_item_shop_available"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/green"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

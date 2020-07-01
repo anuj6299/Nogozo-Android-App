@@ -3,6 +3,7 @@ package com.startup.startup.ui.auth.customer
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -44,17 +45,19 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
     private val viewType_SIGNIN = 1
     private var viewType = viewType_SIGNIN
 
-    private lateinit var nameField: TextInputEditText
+    //private lateinit var nameField: TextInputEditText
     private lateinit var emailField: TextInputEditText
     private lateinit var passwordField: TextInputEditText
     private lateinit var signinButton: MaterialButton
     private lateinit var signupButton: MaterialButton
+    private lateinit var progressBar: ProgressBar
     private lateinit var cc1: ConstraintLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        nameField = view.findViewById(R.id.customer_name_field)
+        //nameField = view.findViewById(R.id.customer_name_field)
         emailField = view.findViewById(R.id.customer_email_field)
         passwordField = view.findViewById(R.id.customer_password_field)
+        progressBar = view.findViewById(R.id.auth_customer_progressBar)
         signinButton = view.findViewById(R.id.customer_login_button)
         signinButton.setBackgroundColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
         signinButton.setOnClickListener(this)
@@ -83,6 +86,7 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
     }
 
     private fun login(){
+        progressBar.visibility = View.VISIBLE
         CoroutineScope(IO).launch{
             val email = emailField.text.toString()
             val password = passwordField.text.toString()
@@ -96,6 +100,8 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
                                 .addListenerForSingleValueEvent(object: ValueEventListener{
                                     override fun onCancelled(error: DatabaseError) {
                                         showToast(error.message)
+                                        progressBar.visibility = View.GONE
+                                        showToast("Something Went Wrong")
                                     }
 
                                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -123,16 +129,19 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
                                     }
                                 })
                         }else{
+                            progressBar.visibility = View.GONE
                             showToast(it.exception!!.message!!)
                         }
                     }
                 }else{
                     withContext(Main){
+                        progressBar.visibility = View.GONE
                         showToast("Please Enter at least 6 digit password")
                     }
                 }
             }else{
                 withContext(Main){
+                    progressBar.visibility = View.GONE
                     showToast("Please Enter Valid Email")
                 }
             }
@@ -140,6 +149,7 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
     }
 
     private fun register(){
+        progressBar.visibility = View.VISIBLE
         CoroutineScope(IO).launch{
             val email = emailField.text.toString()
             val password = passwordField.text.toString()
@@ -155,16 +165,19 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
                             startActivity(i)
                         }else{
                             showToast(it.exception!!.message!!)
+                            progressBar.visibility = View.GONE
                         }
                     }
                 }else{
                     withContext(Main){
                         showToast("Please Enter at least 6 digit password")
+                        progressBar.visibility = View.GONE
                     }
                 }
             }else{
                 withContext(Main){
                     showToast("Please Enter Valid Email")
+                    progressBar.visibility = View.GONE
                 }
             }
         }
@@ -189,18 +202,18 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
             if(viewType == viewType_SIGNIN){
                 signupButton.text = "Don't Have Account? Register"
                 signupButton.setTextColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
-                signupButton.setBackgroundColor(resources.getColor(R.color.white, resources.newTheme()))
+                signupButton.setBackgroundColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
                 signinButton.text = "Login"
-                signinButton.setTextColor(resources.getColor(R.color.white, resources.newTheme()))
+                signinButton.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
                 signinButton.setBackgroundColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
                 constraintSet1
             }else{
                 signupButton.text = "Register"
-                signupButton.setTextColor(resources.getColor(R.color.white, resources.newTheme()))
+                signupButton.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
                 signupButton.setBackgroundColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
                 signinButton.text = "Already Have Account? Login"
                 signinButton.setTextColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
-                signinButton.setBackgroundColor(resources.getColor(R.color.white, resources.newTheme()))
+                signinButton.setBackgroundColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
                 constraintSet2
             }
         constraint.applyTo(cc1)

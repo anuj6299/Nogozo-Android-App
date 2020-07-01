@@ -3,16 +3,21 @@ package com.startup.startup.ui.main.customer.itemsInShop
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.startup.startup.R
 import com.startup.startup.datamodels.Item
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolder>() {
 
     private var dataList: ArrayList<Item> = ArrayList()
-    private var selected: HashMap<Int, Int> = HashMap()
+    private var selected: HashMap<Int, Int> = HashMap() // position, quantity
+    private var priceLiveData: MediatorLiveData<Int> = MediatorLiveData()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_iteminshop, parent, false)
@@ -39,8 +44,31 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
         notifyDataSetChanged()
     }
 
+    fun getPriceLiveData(): LiveData<Int>{
+        return priceLiveData
+    }
+
     fun calculateTotal(){
         //TODO PRIORITY MEDIUM
+        CoroutineScope(Dispatchers.Default).launch{
+            var price = 0
+            for((key, value) in selected){
+                price += dataList[key].itemPrice.toInt()*value
+            }
+            priceLiveData.postValue(price)
+        }
+    }
+
+    fun getSelectedItem(): HashMap<String, Any>{
+        val map: HashMap<String, Any> = HashMap()
+        for((key, value) in selected){
+            val itemMap: HashMap<String, String> = HashMap()
+            itemMap["itemname"] = dataList[key].itemName!!
+            itemMap["quantity"] = dataList[key].itemQuantity!!
+            itemMap["times"] = value.toString()
+            map[dataList[key].itemId!!] = itemMap
+        }
+        return map
     }
 
     inner class ItemsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener{
@@ -48,8 +76,8 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
         var itemPrice: TextView = itemView.findViewById(R.id.list_item_iteminshop_price)
         var itemDesc: TextView = itemView.findViewById(R.id.list_item_iteminshop_desc)
         var itemQuantity: TextView = itemView.findViewById(R.id.list_item_iteminshop_quantity)
-        private val minus: ImageButton = itemView.findViewById(R.id.list_item_iteminshop_minus)
-        private val add: ImageButton = itemView.findViewById(R.id.list_item_iteminshop_add)
+        private val minus: TextView = itemView.findViewById(R.id.list_item_iteminshop_minus)
+        private val add: TextView = itemView.findViewById(R.id.list_item_iteminshop_add)
 
         init {
             minus.setOnClickListener(this)

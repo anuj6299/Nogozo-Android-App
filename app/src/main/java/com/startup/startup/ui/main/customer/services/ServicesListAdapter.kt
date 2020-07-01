@@ -3,6 +3,7 @@ package com.startup.startup.ui.main.customer.services
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,7 +11,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.startup.startup.R
 import com.startup.startup.datamodels.Services
-import de.hdodenhof.circleimageview.CircleImageView
 
 class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickInterface): RecyclerView.Adapter<ServicesListAdapter.ServicesViewHolder>() {
 
@@ -28,7 +28,6 @@ class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickI
     override fun onBindViewHolder(holder: ServicesViewHolder, position: Int) {
         holder.textView.text = dataList[position].serviceName
         Glide.with(holder.itemView.context)
-            .setDefaultRequestOptions(RequestOptions.placeholderOf(R.drawable.ic_launcher_background).error(R.drawable.ic_location))
             .load(dataList[position].imageUrl)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.imageView)
@@ -49,7 +48,7 @@ class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickI
             itemView.setOnClickListener(this)
         }
 
-        var imageView: CircleImageView = itemView.findViewById(R.id.list_item_service_imageview)
+        var imageView: ImageView = itemView.findViewById(R.id.list_item_service_imageview)
         var textView: TextView = itemView.findViewById(R.id.list_item_service_text)
 
         override fun onClick(v: View?) {

@@ -32,12 +32,12 @@ class ItemsInShopFragmentViewModel
                 println(snapshot.value)
                 if(snapshot.value != null){
                     CoroutineScope(Dispatchers.Default).launch{
-                        var data: ArrayList<Item> = ArrayList()
+                        val data: ArrayList<Item> = ArrayList()
                         for (item in snapshot.children) {
                             val i = Item(item.key)
                             val v = item.value as HashMap<String, String>
                             i.itemName = v["itemname"]
-                            i.itemPrice = v["itemprice"]
+                            i.itemPrice = v["itemprice"]!!
                             i.itemQuantity = v["quantity"]
                             i.isAvailable = v["isavailable"] == "true"
                             data.add(i)

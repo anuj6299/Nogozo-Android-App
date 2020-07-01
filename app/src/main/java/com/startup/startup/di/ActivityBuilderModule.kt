@@ -7,6 +7,15 @@ import com.startup.startup.di.main.MainFragmentModule
 import com.startup.startup.di.main.MainModule
 import com.startup.startup.di.main.MainScope
 import com.startup.startup.di.main.MainViewModelModule
+import com.startup.startup.di.orders.OrderFragmentModule
+import com.startup.startup.di.orders.OrderScope
+import com.startup.startup.di.orders.OrderViewModelModule
+import com.startup.startup.di.payment.PaymentFragmentModule
+import com.startup.startup.di.payment.PaymentScope
+import com.startup.startup.di.payment.PaymentViewModelModule
+import com.startup.startup.di.profile.ProfileFragmentModule
+import com.startup.startup.di.profile.ProfileScope
+import com.startup.startup.di.profile.ProfileViewModelModule
 import com.startup.startup.di.splash.SplashViewModelModule
 import com.startup.startup.di.userdetails.UserDetailsFragmentModule
 import com.startup.startup.di.userdetails.UserDetailsScope
@@ -14,6 +23,9 @@ import com.startup.startup.di.userdetails.UserDetailsViewModelModule
 import com.startup.startup.ui.BaseActivity
 import com.startup.startup.ui.auth.AuthActivity
 import com.startup.startup.ui.main.MainActivity
+import com.startup.startup.ui.orders.OrdersActivity
+import com.startup.startup.ui.payment.ConfirmActivity
+import com.startup.startup.ui.profile.ProfileActivity
 import com.startup.startup.ui.userdetails.UserDetailsActivity
 import com.startup.startup.ui.splash.SplashActivity
 import dagger.Module
@@ -59,4 +71,31 @@ abstract class ActivityBuilderModule {
         ]
     )
     abstract fun contributeMainActivity(): MainActivity
+
+    @PaymentScope
+    @ContributesAndroidInjector(
+        modules = [
+            PaymentFragmentModule::class,
+            PaymentViewModelModule::class
+        ]
+    )
+    abstract fun contributeConfirmActivity(): ConfirmActivity
+
+    @ProfileScope
+    @ContributesAndroidInjector(
+        modules = [
+            ProfileFragmentModule::class,
+            ProfileViewModelModule::class
+        ]
+    )
+    abstract fun contributeProfileActivity(): ProfileActivity
+
+    @OrderScope
+    @ContributesAndroidInjector(
+        modules = [
+            OrderFragmentModule::class,
+            OrderViewModelModule::class
+        ]
+    )
+    abstract  fun contributeOrderActivity(): OrdersActivity
 }

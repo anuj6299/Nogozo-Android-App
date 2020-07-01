@@ -3,6 +3,7 @@ package com.startup.startup.network
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
 import com.startup.startup.datamodels.CustomerProfile
 
 class Database {
@@ -18,13 +19,13 @@ class Database {
 
         return FirebaseDatabase.getInstance().reference
             .child("users").child(userType)
-            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+            .child(FirebaseAuth.getInstance().currentUser!!.uid).child("profile")
     }
 
     fun setUserProfile(userType: String, map: HashMap<String, Any>): Task<Void> {
         val ref = FirebaseDatabase.getInstance().reference
             .child("users").child(userType)
-            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+            .child(FirebaseAuth.getInstance().currentUser!!.uid).child("profile")
 
         return ref.updateChildren(map)
     }
@@ -32,7 +33,7 @@ class Database {
     fun setUserProfileOnRegistered(userType: String, profile: CustomerProfile){
         val ref = FirebaseDatabase.getInstance().reference
             .child("users").child(userType)
-            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+            .child(FirebaseAuth.getInstance().currentUser!!.uid).child("profile")
 
         val map: HashMap<String, Any> = HashMap()
         map["email"] = profile.email!!
@@ -64,5 +65,45 @@ class Database {
     fun getItems(shopId: String): DatabaseReference{
         return FirebaseDatabase.getInstance().reference
             .child("items").child(shopId)
+    }
+
+    fun getItemById(shopId: String, itemId: String): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("items").child(shopId).child(itemId)
+    }
+
+    fun getShopAddress(shopid: String): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child("shop")
+            .child(shopid).child("address")
+    }
+
+    fun getShopStatus(shopId: String): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child("shop")
+            .child(shopId).child("status")
+    }
+
+
+    fun createOrder(): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("orders").push()
+    }
+
+    fun getCurrentOrders(userType: String,userId: String): Query{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child(userType)
+            .child(userId).child("orders").orderByValue().equalTo("current")
+    }
+
+    fun getPastOrder(userType: String,userId: String): Query{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child(userType)
+            .child(userId).child("orders").orderByValue().equalTo("history")
+    }
+
+    fun getOrderDetails(orderId: String): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("orders").child(orderId)
     }
 }

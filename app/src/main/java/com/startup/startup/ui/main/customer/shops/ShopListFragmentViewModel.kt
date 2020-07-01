@@ -34,10 +34,11 @@ class ShopListFragmentViewModel
                 override fun onDataChange(snapshot: DataSnapshot) {
                     CoroutineScope(Dispatchers.Default).launch{
                         if(snapshot.value != null){
-                            val map = snapshot.value as HashMap<String, String>
+                            val map = snapshot.value as HashMap<String, Any>
                             val shops: ArrayList<Shop> = ArrayList()
                             for((key, value) in map){
-                                shops.add(Shop(value, key, ""))
+                                val shop = value as HashMap<String, String>
+                                shops.add(Shop(shop["shopname"], key, shop["imageurl"], null))
                             }
                             shopList.postValue(DataResource.success(shops))
                         }else{

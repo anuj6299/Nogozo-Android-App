@@ -5,6 +5,7 @@ import com.startup.startup.di.ViewModelKey
 import com.startup.startup.ui.main.customer.itemsInShop.ItemsInShopFragmentViewModel
 import com.startup.startup.ui.main.customer.shops.ShopListFragmentViewModel
 import com.startup.startup.ui.main.customer.services.CustomerServiceFragmentViewModel
+import com.startup.startup.ui.main.vendor.orders.current.VendorCurrentOrdersFragmentViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -29,4 +30,10 @@ abstract class MainViewModelModule{
     @IntoMap
     @ViewModelKey(ItemsInShopFragmentViewModel::class)
     abstract fun bindItemInShopViewModel(viewModel: ItemsInShopFragmentViewModel): ViewModel
+
+    @MainScope
+    @Binds
+    @IntoMap
+    @ViewModelKey(VendorCurrentOrdersFragmentViewModel::class)
+    abstract fun bindCurrentOrderVendorViewModel(viewModel: VendorCurrentOrdersFragmentViewModel): ViewModel
 }

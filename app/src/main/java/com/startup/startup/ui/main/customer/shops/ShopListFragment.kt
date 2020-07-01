@@ -1,7 +1,10 @@
 package com.startup.startup.ui.main.customer.shops
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,13 +26,18 @@ class ShopListFragment(val communicator: Communicator): BaseFragment(R.layout.fr
     lateinit var viewModel: ShopListFragmentViewModel
 
     lateinit var recyclerView: RecyclerView
+    lateinit var progressBar: ProgressBar
 
     lateinit var adapter: ShopListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        communicator.setToolbarTitle("Shops")
+
         viewModel = ViewModelProvider(this, factory)[ShopListFragmentViewModel::class.java]
 
         recyclerView = view.findViewById(R.id.fragment_main_shop_recyclerview)
+        progressBar = view.findViewById(R.id.fragment_shops_progressBar)
 
         initRecycler()
 
@@ -50,17 +58,20 @@ class ShopListFragment(val communicator: Communicator): BaseFragment(R.layout.fr
         viewModel.getShopsList(serviceId).observe(viewLifecycleOwner, Observer {
             when(it!!.status){
                 DataResource.Status.SUCCESS -> {
+                    progressBar.visibility = View.GONE
                     adapter.setItemList(it.data)
                 }
                 DataResource.Status.ERROR -> {
                     Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
                 }
-                DataResource.Status.LOADING -> {}
+                DataResource.Status.LOADING -> {
+                    progressBar.visibility = View.VISIBLE
+                }
             }
         })
     }
 
     override fun onShopClick(position: Int) {
-        communicator.onShopSelected(adapter.getItemAt(position).shopId)
+        communicator.onShopSelected(adapter.getItemAt(position).shopId, adapter.getItemAt(position).shopName!!)
     }
 }

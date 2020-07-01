@@ -1,19 +1,33 @@
 package com.startup.startup.ui.auth.vendor
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 import com.startup.startup.R
+import com.startup.startup.datamodels.CustomerProfile
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
-import com.startup.startup.ui.auth.AuthResource
+import com.startup.startup.ui.main.MainActivity
+import com.startup.startup.ui.userdetails.UserDetailsActivity
 import com.startup.startup.util.Constants
+import com.startup.startup.util.Helper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class VendorAuthFragment: BaseFragment(R.layout.fragment_auth_vendor),View.OnClickListener {
+class VendorAuthFragment: BaseFragment(R.layout.fragment_auth_vendor_signin),View.OnClickListener {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -23,45 +37,91 @@ class VendorAuthFragment: BaseFragment(R.layout.fragment_auth_vendor),View.OnCli
     private lateinit var emailField: TextInputEditText
     private lateinit var passwordField: TextInputEditText
     private lateinit var loginButton: MaterialButton
+    private lateinit var progressBar: ProgressBar
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         emailField = view.findViewById(R.id.vendor_email_field)
         passwordField = view.findViewById(R.id.vendor_password_field)
+        progressBar = view.findViewById(R.id.auth_vendor_progressBar)
         loginButton = view.findViewById(R.id.vendor_login_button)
         loginButton.setOnClickListener(this)
 
         viewModel = ViewModelProvider(this, factory)[VendorAuthFragmentViewModel::class.java]
-
-//        viewModel.getCachedUser().removeObservers(viewLifecycleOwner)
-//
-//        viewModel.getCachedUser().observe(viewLifecycleOwner, Observer{
-//            when(it.Status){
-//                AuthResource.AuthStatus.AUTHENTICATED -> {
-//                    //to next activity on user status
-//                    println("authenticated")
-//                }
-//                AuthResource.AuthStatus.LOADING -> {
-//                    //show loading status
-//                    println("loading123")
-//                }
-//                AuthResource.AuthStatus.NOT_AUTHENTICATED -> {
-//                    //not authenticated
-//                    println("not authenticated 123")
-//                }
-//                AuthResource.AuthStatus.ERROR -> {
-//                    // error
-//                    println("error")
-//                }
-//            }
-//        })
     }
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.customer_login_button -> {
-                //viewModel.authenticateUser(emailField.text.toString(), passwordField.text.toString(), Constants.userType_VENDOR)
+            R.id.vendor_login_button -> {
+                login()
             }
         }
+    }
+
+    private fun login(){
+        progressBar.visibility = View.VISIBLE
+        CoroutineScope(Dispatchers.IO).launch{
+            val email = emailField.text.toString()
+            val password = passwordField.text.toString()
+            if(Helper.isValidEmail(email)){
+                if(password.length > 6){
+                    val task = viewModel.login(emailField.text.toString(), passwordField.text.toString())
+                    task.addOnCompleteListener{
+                        if(it.isSuccessful){
+                            viewModel.saveOnLogged(email)
+                            viewModel.getUserProfile()
+                                .addListenerForSingleValueEvent(object: ValueEventListener {
+                                    override fun onCancelled(error: DatabaseError) {
+                                        showToast(error.message)
+                                        FirebaseAuth.getInstance().signOut()
+                                        showToast("Something Went Wrong")
+                                        progressBar.visibility = View.GONE
+                                    }
+
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        val vendorProfile = snapshot.getValue<CustomerProfile>()
+                                        if(vendorProfile != null){
+                                            if(vendorProfile.profilelevel == Constants.PROFILE_LEVEL_0){
+                                                val i = Intent(context, UserDetailsActivity::class.java)
+                                                i.putExtra(Constants.USER_TYPE, Constants.userType_VENDOR)
+                                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                                startActivity(i)
+                                            }
+                                            else if(vendorProfile.profilelevel == Constants.PROFILE_LEVEL_1){
+                                                viewModel.saveProfileToLocal(vendorProfile)
+                                                val i = Intent(context, MainActivity::class.java)
+                                                i.putExtra(Constants.USER_TYPE, Constants.userType_VENDOR)
+                                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                                startActivity(i)
+                                            }
+                                        }else{
+                                            progressBar.visibility = View.GONE
+                                            FirebaseAuth.getInstance().signOut()
+                                            showToast("Looks Like you are not Registered.\nContact Our Support Team to register.")
+                                        }
+                                    }
+                                })
+                        }else{
+                            showToast(it.exception!!.message!!)
+                            progressBar.visibility = View.GONE
+                        }
+                    }
+                }else{
+                    withContext(Dispatchers.Main){
+                        showToast("Please Enter at least 6 digit password")
+                        progressBar.visibility = View.GONE
+                    }
+                }
+            }else{
+                withContext(Dispatchers.Main){
+                    showToast("Please Enter Valid Email")
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun showToast(msg: String){
+        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
     }
 }

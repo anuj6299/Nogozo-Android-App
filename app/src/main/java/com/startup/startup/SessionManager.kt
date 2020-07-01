@@ -8,6 +8,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.ktx.Firebase
 import com.startup.startup.datamodels.CustomerProfile
+import com.startup.startup.datamodels.VendorProfile
 import com.startup.startup.network.Auth
 import com.startup.startup.network.Database
 import com.startup.startup.ui.auth.AuthResource
@@ -40,6 +41,10 @@ class SessionManager
         return AuthResource.notAuthenticated()
     }
 
+    fun getUserId(): String{
+        return FirebaseAuth.getInstance().currentUser!!.uid
+    }
+
      fun logout(){
         editPreferences.clear().apply()
         FirebaseAuth.getInstance().signOut()
@@ -66,8 +71,17 @@ class SessionManager
     }
 
     fun getUserProfile(): DatabaseReference{
-        println(getUserType())
         return Database().getUserProfile(getUserType())
+    }
+
+    fun getUserName(): String{
+        return preferences.getString(NAME,"")!!
+    }
+    fun getUserPhone(): String{
+        return preferences.getString(PHONE,"")!!
+    }
+    fun getUserAddress(): String{
+        return preferences.getString(ADDRESS,"")!!
     }
 
     fun saveCustomerProfileToLocal(profile: CustomerProfile){
@@ -96,6 +110,10 @@ class SessionManager
             editPreferences.putString(PHONE, map["phone"] as String).apply()
         }
     }
+
+    fun saveVendorProfileToLocal(map: HashMap<String, Any>){}
+
+    fun saveVendorProfileToLocal(profile: VendorProfile){}
 
     fun saveOnRegistered(email: String, userType: String){
         CoroutineScope(Dispatchers.Default).launch{
