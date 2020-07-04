@@ -3,7 +3,9 @@ package com.startup.startup.ui.main.customer.itemsInShop
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +18,7 @@ import kotlinx.coroutines.launch
 class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolder>() {
 
     private var dataList: ArrayList<Item> = ArrayList()
-    private var selected: HashMap<Int, Int> = HashMap() // position, quantity
+    private var selected: HashMap<Int, Int> = HashMap() // position, quantity TODO SWITCH position -> itemId PRIORITY HIGH
     private var priceLiveData: MediatorLiveData<Int> = MediatorLiveData()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsViewHolder {
@@ -30,12 +32,27 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
 
     override fun onBindViewHolder(holder: ItemsViewHolder, position: Int) {
         holder.itemName.text = dataList[position].itemName
-        holder.itemPrice.text = dataList[position].itemPrice
+        holder.itemPrice.text = "₹${dataList[position].itemPrice}"
         holder.itemDesc.text = dataList[position].itemQuantity
         if(selected.containsKey(position)){
             holder.itemQuantity.text = "${selected[position]}"
         }else{
             holder.itemQuantity.text = "0"
+        }
+
+        println("$position ${dataList[position].isAvailable}")
+        if(!dataList[position].isAvailable!!){
+            holder.itemName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
+            holder.itemPrice.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
+            holder.itemDesc.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
+            holder.itemQuantity.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
+            holder.wrapper.visibility = View.INVISIBLE
+        }else{
+            holder.itemName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+            holder.itemPrice.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+            holder.itemDesc.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+            holder.itemQuantity.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+            holder.wrapper.visibility = View.VISIBLE
         }
     }
 
@@ -49,7 +66,6 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
     }
 
     fun calculateTotal(){
-        //TODO PRIORITY MEDIUM
         CoroutineScope(Dispatchers.Default).launch{
             var price = 0
             for((key, value) in selected){
@@ -76,8 +92,9 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
         var itemPrice: TextView = itemView.findViewById(R.id.list_item_iteminshop_price)
         var itemDesc: TextView = itemView.findViewById(R.id.list_item_iteminshop_desc)
         var itemQuantity: TextView = itemView.findViewById(R.id.list_item_iteminshop_quantity)
-        private val minus: TextView = itemView.findViewById(R.id.list_item_iteminshop_minus)
-        private val add: TextView = itemView.findViewById(R.id.list_item_iteminshop_add)
+        var wrapper: View = itemView.findViewById(R.id.action_wrapper)
+        private val minus: ImageButton = itemView.findViewById(R.id.list_item_iteminshop_minus)
+        private val add: ImageButton = itemView.findViewById(R.id.list_item_iteminshop_add)
 
         init {
             minus.setOnClickListener(this)

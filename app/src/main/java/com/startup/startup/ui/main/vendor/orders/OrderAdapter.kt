@@ -4,17 +4,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.startup.startup.R
-import com.startup.startup.datamodels.Item
 import com.startup.startup.datamodels.Order
 
-class OrderAdapter(private val showPackedButton: Boolean): RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
+class OrderAdapter(private val showPackedButton: Boolean = false): RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
     private var dataList: ArrayList<Order> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_current_order, parent, false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_order, parent, false)
         return OrderViewHolder(v)
     }
 
@@ -54,6 +54,7 @@ class OrderAdapter(private val showPackedButton: Boolean): RecyclerView.Adapter<
         override fun onClick(v: View?) {
             if(v!!.id == R.id.list_item_current_order_markpacked_button){
                 //When Marker Packed
+                Toast.makeText(itemView.context, "Coming Soon..", Toast.LENGTH_SHORT).show()
             }
         }
     }

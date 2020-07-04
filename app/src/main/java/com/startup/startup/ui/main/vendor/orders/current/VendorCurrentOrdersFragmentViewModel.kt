@@ -22,6 +22,10 @@ class VendorCurrentOrdersFragmentViewModel
     private val currentOrders: MediatorLiveData<DataResource<ArrayList<Order>>> = MediatorLiveData()
 
     fun getCurrentOrders(){
+        if(currentOrders.value != null){
+            if(currentOrders.value!!.status == DataResource.Status.LOADING)
+                return
+        }
         currentOrders.value = DataResource.loading()
         Database().getCurrentOrders(sessionManager.getUserType(), sessionManager.getUserId()).addValueEventListener(object: ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
@@ -54,7 +58,6 @@ class VendorCurrentOrdersFragmentViewModel
                 }
 
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    println(snapshot)
                     val order = snapshot.getValue<Order>()!!
                     if(currentOrders.value!!.data.isNullOrEmpty()){
                         val arrayList: ArrayList<Order> = ArrayList()

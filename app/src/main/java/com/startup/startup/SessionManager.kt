@@ -58,6 +58,10 @@ class SessionManager
         return preferences.getString(AREA_ID,"-1")!!
     }
 
+    fun getAreaName(): String{
+        return preferences.getString(AREA_NAME, "")!!
+    }
+
     fun getProfileLevel(): String{
         return preferences.getString(PROFILE_LEVEL, PROFILE_LEVEL_0)!!
     }

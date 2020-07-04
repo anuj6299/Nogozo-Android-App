@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/customer_auth_signin"
-    android:background="@drawable/background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <!--    <com.google.android.material.textfield.TextInputLayout-->
@@ -37,7 +36,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="160dp"
         android:hint="Email-Id"
-        app:boxStrokeColor="@color/colorPrimary"
+        app:boxStrokeColor="@color/colorAccent"
+        app:hintTextColor="@color/colorAccent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +91,7 @@
         android:layout_margin="16dp"
         android:text="LOGIN"
         android:textColor="#FFFFFF"
-        app:strokeColor="@color/colorPrimary"
+        app:strokeColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/customer_password_wrapper" />
@@ -103,8 +103,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Don't have an Account? SignUp"
-        app:strokeColor="@color/colorPrimary"
-        android:textColor="@color/colorPrimary"
+        app:strokeColor="@color/colorAccent"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

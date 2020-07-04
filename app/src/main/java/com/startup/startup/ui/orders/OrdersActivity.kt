@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.startup.startup.R
 import com.startup.startup.ui.BaseActivity
+import com.startup.startup.ui.orders.customer.CustomerOrdersFragment
 import com.startup.startup.ui.orders.customer.current.CustomerCurrentOrdersFragment
 import com.startup.startup.ui.orders.customer.past.CustomerPastOrdersFragment
 import com.startup.startup.util.Constants.CURRENT_ORDER
@@ -20,11 +21,12 @@ class OrdersActivity: BaseActivity() {
         val userType = intent.getStringExtra(USER_TYPE)
 
         if(userType == userType_CUSTOMER){
-            if(intent.getStringExtra(ORDER_TYPE) == CURRENT_ORDER)
-                startFragment(CustomerCurrentOrdersFragment())
-            else{
-                startFragment(CustomerPastOrdersFragment())
-            }
+//            if(intent.getStringExtra(ORDER_TYPE) == CURRENT_ORDER)
+//                startFragment(CustomerCurrentOrdersFragment())
+//            else{
+//                startFragment(CustomerPastOrdersFragment())
+//            }
+            startFragment(CustomerOrdersFragment())
         }
         else if(userType == userType_VENDOR){}
     }

@@ -3,6 +3,9 @@ package com.startup.startup.di
 import com.startup.startup.di.auth.AuthFragmentModule
 import com.startup.startup.di.auth.AuthScope
 import com.startup.startup.di.auth.AuthViewModelModule
+import com.startup.startup.di.inventory.InventoryScope
+import com.startup.startup.di.inventory.VendorInventoryFragmentModule
+import com.startup.startup.di.inventory.VendorInventoryViewModelModule
 import com.startup.startup.di.main.MainFragmentModule
 import com.startup.startup.di.main.MainModule
 import com.startup.startup.di.main.MainScope
@@ -22,6 +25,7 @@ import com.startup.startup.di.userdetails.UserDetailsScope
 import com.startup.startup.di.userdetails.UserDetailsViewModelModule
 import com.startup.startup.ui.BaseActivity
 import com.startup.startup.ui.auth.AuthActivity
+import com.startup.startup.ui.inventory.VendorInventoryActivity
 import com.startup.startup.ui.main.MainActivity
 import com.startup.startup.ui.orders.OrdersActivity
 import com.startup.startup.ui.payment.ConfirmActivity
@@ -98,4 +102,13 @@ abstract class ActivityBuilderModule {
         ]
     )
     abstract  fun contributeOrderActivity(): OrdersActivity
+
+    @InventoryScope
+    @ContributesAndroidInjector(
+        modules = [
+            VendorInventoryViewModelModule::class,
+            VendorInventoryFragmentModule::class
+        ]
+    )
+    abstract fun contributeVendorInventoryActivity(): VendorInventoryActivity
 }

@@ -201,19 +201,19 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
         val constraint =
             if(viewType == viewType_SIGNIN){
                 signupButton.text = "Don't Have Account? Register"
-                signupButton.setTextColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
-                signupButton.setBackgroundColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
+                signupButton.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
+                signupButton.setBackgroundColor(resources.getColor(R.color.white, resources.newTheme()))
                 signinButton.text = "Login"
-                signinButton.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
-                signinButton.setBackgroundColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
+                signinButton.setTextColor(resources.getColor(R.color.white, resources.newTheme()))
+                signinButton.setBackgroundColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
                 constraintSet1
             }else{
                 signupButton.text = "Register"
-                signupButton.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
-                signupButton.setBackgroundColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
+                signupButton.setTextColor(resources.getColor(R.color.white, resources.newTheme()))
+                signupButton.setBackgroundColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
                 signinButton.text = "Already Have Account? Login"
-                signinButton.setTextColor(resources.getColor(R.color.colorPrimary, resources.newTheme()))
-                signinButton.setBackgroundColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
+                signinButton.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
+                signinButton.setBackgroundColor(resources.getColor(R.color.white, resources.newTheme()))
                 constraintSet2
             }
         constraint.applyTo(cc1)

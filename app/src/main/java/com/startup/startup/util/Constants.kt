@@ -31,6 +31,8 @@ object Constants {
     const val SERVICE_NAME = "servicename"
     const val SHOP_ID = "shopid"
     const val SHOP_NAME = "shopname"
+    const val SHOP_ADDRESS = "shopaddress"
+    const val SHOP_STATUS = "shopstatus"
 
     const val ORDER_TYPE = "ordertype"
     const val CURRENT_ORDER = "currentorder"

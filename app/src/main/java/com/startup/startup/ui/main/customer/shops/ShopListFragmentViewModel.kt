@@ -38,7 +38,7 @@ class ShopListFragmentViewModel
                             val shops: ArrayList<Shop> = ArrayList()
                             for((key, value) in map){
                                 val shop = value as HashMap<String, String>
-                                shops.add(Shop(shop["shopname"], key, shop["imageurl"], null))
+                                shops.add(Shop(shop["shopname"]!!, key, shop["imageurl"], null))
                             }
                             shopList.postValue(DataResource.success(shops))
                         }else{

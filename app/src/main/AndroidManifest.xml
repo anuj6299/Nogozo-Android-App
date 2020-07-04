@@ -25,6 +25,8 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.inventory.VendorInventoryActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.ChooseOnMapActivity"
             android:screenOrientation="portrait" />

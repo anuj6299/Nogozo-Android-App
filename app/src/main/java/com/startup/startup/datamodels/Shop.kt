@@ -1,7 +1,7 @@
 package com.startup.startup.datamodels
 
 class Shop {
-    var shopName: String? = null
+    lateinit var shopName: String
 
     lateinit var shopId: String
 
@@ -11,7 +11,7 @@ class Shop {
 
     var shopCurrentStatus: String? = null
 
-    constructor(shopName: String?, shopId: String, imageUrl: String?, shopCurrentStatus: String?){
+    constructor(shopName: String, shopId: String, imageUrl: String?, shopCurrentStatus: String?){
         this.shopId = shopId
         this.shopName = shopName
         this.imageUrl = imageUrl

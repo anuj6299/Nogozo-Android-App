@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import androidx.annotation.NonNull
 import com.bumptech.glide.request.RequestOptions
 import com.startup.startup.R
+import com.startup.startup.network.Database
 import com.startup.startup.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -55,6 +56,12 @@ class AppModule {
     @Singleton
     fun provideSharedPreferencesEditor(application: Application): SharedPreferences.Editor{
         return application.getSharedPreferences("preference", Context.MODE_PRIVATE).edit()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(): Database{
+        return Database()
     }
 
 //    @Provides

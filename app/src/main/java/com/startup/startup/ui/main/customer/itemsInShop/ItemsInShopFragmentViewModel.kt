@@ -16,20 +16,21 @@ import javax.inject.Inject
 
 class ItemsInShopFragmentViewModel
     @Inject
-    constructor(): ViewModel() {
+    constructor(
+        private val database: Database
+    ): ViewModel() {
 
     var items: MutableLiveData<DataResource<ArrayList<Item>>> = MutableLiveData()
 
     fun getItems(shopId: String): LiveData<DataResource<ArrayList<Item>>> {
         items.value = DataResource.loading()
 
-        Database().getItems(shopId).addListenerForSingleValueEvent(object: ValueEventListener{
+        database.getItems(shopId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
                 items.value = DataResource.error(error.message)
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                println(snapshot.value)
                 if(snapshot.value != null){
                     CoroutineScope(Dispatchers.Default).launch{
                         val data: ArrayList<Item> = ArrayList()
@@ -39,7 +40,7 @@ class ItemsInShopFragmentViewModel
                             i.itemName = v["itemname"]
                             i.itemPrice = v["itemprice"]!!
                             i.itemQuantity = v["quantity"]
-                            i.isAvailable = v["isavailable"] == "true"
+                            i.isAvailable = v["isAvailable"] == "true"
                             data.add(i)
                         }
                         items.postValue(DataResource.success(data))

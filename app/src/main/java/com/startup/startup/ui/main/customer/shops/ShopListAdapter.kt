@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DataSnapshot
@@ -71,7 +72,7 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         return dataList[position]
     }
 
-    class ShopsViewHolder(itemView: View, private val onShopClickInterface: OnShopClickInterface): RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    inner class ShopsViewHolder(itemView: View, private val onShopClickInterface: OnShopClickInterface): RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
         init {
             itemView.setOnClickListener(this)
@@ -82,7 +83,10 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         var available: TextView = itemView.findViewById(R.id.list_item_shop_available)
 
         override fun onClick(v: View?) {
-            onShopClickInterface.onShopClick(adapterPosition)
+            if(dataList[adapterPosition].shopAddress != null)
+                onShopClickInterface.onShopClick(adapterPosition)
+            else
+                Toast.makeText(itemView.context, "Please Wait For Data To Load...", Toast.LENGTH_SHORT).show()
         }
     }
 

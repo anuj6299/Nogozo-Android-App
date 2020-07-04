@@ -42,7 +42,6 @@ constructor(
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 CoroutineScope(IO).launch{
-                    println(snapshot)
                     val list: ArrayList<Services> = ArrayList()
                     val service = snapshot.value as HashMap<String, Any>
                     for((key, value) in service){

@@ -35,8 +35,8 @@ class CustomerCurrentOrdersFragment: BaseFragment(R.layout.fragment_orders) {
 
         progressBar = view.findViewById(R.id.customer_order_progressbar)
         recyclerView = view.findViewById(R.id.customer_order_recyclerView)
-        header = view.findViewById(R.id.customer_order_header)
-        header.text = "Current Orders"
+        //header = view.findViewById(R.id.customer_order_header)
+        //header.text = "Current Orders"
 
         initRecycler()
         getOrders()
@@ -45,7 +45,7 @@ class CustomerCurrentOrdersFragment: BaseFragment(R.layout.fragment_orders) {
     private fun initRecycler(){
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.addItemDecoration(VerticalSpacingItemDecoration(8))
-        adapter = OrderAdapter(false)
+        adapter = OrderAdapter()
         recyclerView.adapter = adapter
     }
 

@@ -1,6 +1,7 @@
 package com.startup.startup.di.orders
 
 import com.startup.startup.ui.main.vendor.orders.current.VendorCurrentOrdersFragment
+import com.startup.startup.ui.orders.customer.CustomerOrdersFragment
 import com.startup.startup.ui.orders.customer.current.CustomerCurrentOrdersFragment
 import com.startup.startup.ui.orders.customer.past.CustomerPastOrdersFragment
 import dagger.Module
@@ -17,4 +18,7 @@ abstract class OrderFragmentModule{
 
     @ContributesAndroidInjector
     abstract fun contributeCustomerCurrentOrdersFragment(): CustomerCurrentOrdersFragment
+
+    @ContributesAndroidInjector
+    abstract  fun contributeCustomerOrdersFragment(): CustomerOrdersFragment
 }

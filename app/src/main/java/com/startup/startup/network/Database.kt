@@ -72,6 +72,12 @@ class Database {
             .child("items").child(shopId).child(itemId)
     }
 
+    fun changeItemAvailabilityStatus(shopId: String, itemId: String, itemAvailabilityStatus: String){
+        FirebaseDatabase.getInstance().reference
+            .child("items").child(shopId).child(itemId)
+            .child("isAvailable").setValue(itemAvailabilityStatus)
+    }
+
     fun getShopAddress(shopid: String): DatabaseReference{
         return FirebaseDatabase.getInstance().reference
             .child("users").child("shop")
@@ -105,5 +111,20 @@ class Database {
     fun getOrderDetails(orderId: String): DatabaseReference{
         return FirebaseDatabase.getInstance().reference
             .child("orders").child(orderId)
+    }
+
+    fun createItemInShop(shopId: String, map: HashMap<String, Any>): Task<Void> {
+        val itemid =  FirebaseDatabase.getInstance().reference
+            .child("items").child(shopId).push().key!!
+
+        return FirebaseDatabase.getInstance().reference
+            .child("items").child(shopId).child(itemid).setValue(map)
+    }
+
+    fun editItemInShop(shopId: String, itemId: String, map: HashMap<String, Any>): Task<Void>{
+        val ref = FirebaseDatabase.getInstance().reference
+            .child("items").child(shopId).child(itemId)
+
+        return ref.updateChildren(map)
     }
 }
