@@ -4,9 +4,7 @@ import android.content.SharedPreferences
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.ktx.Firebase
 import com.startup.startup.datamodels.CustomerProfile
 import com.startup.startup.datamodels.VendorProfile
 import com.startup.startup.network.Auth
@@ -32,7 +30,10 @@ import javax.inject.Singleton
 
 @Singleton
 class SessionManager
-@Inject constructor(private val preferences: SharedPreferences, private val editPreferences: SharedPreferences.Editor) {
+@Inject constructor(
+    private val database: Database,
+    private val preferences: SharedPreferences,
+    private val editPreferences: SharedPreferences.Editor) {
 
     fun getCurrentUser(): AuthResource{
         val auth = FirebaseAuth.getInstance()
@@ -75,7 +76,7 @@ class SessionManager
     }
 
     fun getUserProfile(): DatabaseReference{
-        return Database().getUserProfile(getUserType())
+        return database.getUserProfile(getUserType())
     }
 
     fun getUserName(): String{
@@ -88,7 +89,7 @@ class SessionManager
         return preferences.getString(ADDRESS,"")!!
     }
 
-    fun saveCustomerProfileToLocal(profile: CustomerProfile){
+    fun saveProfileToLocal(profile: CustomerProfile){
         CoroutineScope(Dispatchers.Default).launch {
             editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_1).apply()
             editPreferences.putString(EMAIL, profile.email).apply()
@@ -124,8 +125,12 @@ class SessionManager
             editPreferences.putString(EMAIL, email).apply()
             editPreferences.putString(PROFILE_LEVEL, PROFILE_LEVEL_0).apply()
             editPreferences.putString(USER_TYPE, userType).apply()
-            Database().setUserProfileOnRegistered(userType, CustomerProfile(email, PROFILE_LEVEL_0))
+            database.setUserProfileOnRegistered(userType, CustomerProfile(email, PROFILE_LEVEL_0))
         }
+    }
+
+    fun uploadToken(token: String){
+        database.uploadToken(token)
     }
 
     fun saveOnLogged(email: String, userType: String){

@@ -4,11 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.R
 import com.startup.startup.datamodels.Item
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +24,8 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
     private var dataList: ArrayList<Item> = ArrayList()
     private var selected: HashMap<Int, Int> = HashMap() // position, quantity TODO SWITCH position -> itemId PRIORITY HIGH
     private var priceLiveData: MediatorLiveData<Int> = MediatorLiveData()
+
+    private val itemImageBaseUrl = FirebaseStorage.getInstance().reference.child("items")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_iteminshop, parent, false)
@@ -39,6 +45,11 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
         }else{
             holder.itemQuantity.text = "0"
         }
+
+        Glide.with(holder.itemView.context)
+            .load(itemImageBaseUrl.child(dataList[position].itemId!!))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(holder.itemImage)
 
         println("$position ${dataList[position].isAvailable}")
         if(!dataList[position].isAvailable!!){
@@ -88,6 +99,7 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
     }
 
     inner class ItemsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener{
+        var itemImage: ImageView = itemView.findViewById(R.id.list_item_iteminshop_image)
         var itemName: TextView = itemView.findViewById(R.id.list_item_iteminshop_name)
         var itemPrice: TextView = itemView.findViewById(R.id.list_item_iteminshop_price)
         var itemDesc: TextView = itemView.findViewById(R.id.list_item_iteminshop_desc)

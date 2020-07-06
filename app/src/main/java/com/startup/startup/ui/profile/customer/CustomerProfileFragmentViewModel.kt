@@ -24,7 +24,8 @@ import javax.inject.Inject
 class CustomerProfileFragmentViewModel
     @Inject
     constructor(
-        private val sessionManager: SessionManager
+        private val sessionManager: SessionManager,
+        private val database: Database
     ): ViewModel() {
 
     private var cities: MediatorLiveData<CityResource<List<City>>> = MediatorLiveData()
@@ -34,7 +35,7 @@ class CustomerProfileFragmentViewModel
     fun getCities(): LiveData<CityResource<List<City>>> {
         cities.value = CityResource.loading()
 
-        Database().getCities().addListenerForSingleValueEvent(object: ValueEventListener {
+        database.getCities().addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 cities.value = CityResource.error(error.message)
             }
@@ -56,7 +57,7 @@ class CustomerProfileFragmentViewModel
     fun getAreaOfCity(cityId: String): LiveData<CityResource<List<Area>>> {
         areas.value = CityResource.loading()
 
-        Database().getAreas(cityId).addListenerForSingleValueEvent(object: ValueEventListener {
+        database.getAreas(cityId).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 areas.value = CityResource.error(error.message)
             }
@@ -78,7 +79,7 @@ class CustomerProfileFragmentViewModel
 
     fun getUserProfile(): LiveData<DataResource<CustomerProfile>>{
         userProfile.value = DataResource.loading()
-        Database().getUserProfile(userType_CUSTOMER).addListenerForSingleValueEvent(object: ValueEventListener{
+        database.getUserProfile(userType_CUSTOMER).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
             }
 
@@ -95,7 +96,7 @@ class CustomerProfileFragmentViewModel
     }
 
     fun updateUserProfile(map: HashMap<String, Any>): Task<Void> {
-        return Database().setUserProfile(sessionManager.getUserType() ,map)
+        return database.setUserProfile(sessionManager.getUserType() ,map)
     }
 
     fun saveProfileToLocal(map: HashMap<String, Any>){

@@ -28,7 +28,7 @@ constructor(
     }
 
     fun saveProfileToLocal(profile: CustomerProfile){
-        sessionManager.saveCustomerProfileToLocal(profile)
+        sessionManager.saveProfileToLocal(profile)
     }
 
     fun saveOnRegistered(email: String){
@@ -37,5 +37,9 @@ constructor(
 
     fun saveOnLogged(email: String){
         sessionManager.saveOnLogged(email, userType_CUSTOMER)
+    }
+
+    fun uploadToken(token: String){
+        sessionManager.uploadToken(token)
     }
 }

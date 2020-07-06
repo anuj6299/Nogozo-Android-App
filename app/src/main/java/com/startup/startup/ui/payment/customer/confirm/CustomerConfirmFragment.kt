@@ -53,9 +53,11 @@ class CustomerConfirmFragment: BaseFragment(R.layout.fragment_payment_confirm), 
                     orderData["customerphone"] = viewModel.getUserPhone()
                     orderData["customerid"] = viewModel.getUserId()
                     val dateFormatter = SimpleDateFormat("dd/MM/yyyy")
-                    val timeFormatter = SimpleDateFormat("hh:mm")
+                    val timeFormatter = SimpleDateFormat("HH:mm")
                     orderData["date"] = dateFormatter.format(Date())
                     orderData["time"] = timeFormatter.format(Date())
+                    val datetimeFormatter = SimpleDateFormat("yyyyMMddHHmmss")
+                    orderData["datetime"] = datetimeFormatter.format(Date())
                     Database().createOrder().setValue(orderData).addOnCompleteListener{
                         if(it.isSuccessful){
                             createDialog()

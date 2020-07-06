@@ -1,4 +1,4 @@
-package com.startup.startup.ui.orders.customer.past
+package com.startup.startup.ui.orders.vendor.past
 
 import android.os.Bundle
 import android.view.View
@@ -14,10 +14,11 @@ import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
 import com.startup.startup.ui.main.DataResource
 import com.startup.startup.ui.main.vendor.orders.OrderAdapter
+import com.startup.startup.ui.orders.customer.past.CustomerPastOrdersFragmentViewModel
 import com.startup.startup.util.VerticalSpacingItemDecoration
 import javax.inject.Inject
 
-class CustomerPastOrdersFragment: BaseFragment(R.layout.fragment_orders) {
+class VendorPastOrdersFragment: BaseFragment(R.layout.fragment_orders) {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -27,15 +28,16 @@ class CustomerPastOrdersFragment: BaseFragment(R.layout.fragment_orders) {
     private lateinit var progressBar: ProgressBar
     private lateinit var adapter: OrderAdapter
 
-    private lateinit var viewModel: CustomerPastOrdersFragmentViewModel
+    private lateinit var viewModel: VendorPastOrdersFragmentViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel = ViewModelProvider(this, factory)[CustomerPastOrdersFragmentViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[VendorPastOrdersFragmentViewModel::class.java]
 
         progressBar = view.findViewById(R.id.customer_order_progressbar)
         recyclerView = view.findViewById(R.id.customer_order_recyclerView)
-        //header = view.findViewById(R.id.customer_order_header)
-        //header.text = "Past Orders"
+        header = view.findViewById(R.id.customer_order_header)
+        header.text = "Past Orders"
+        header.visibility = View.VISIBLE
 
         initRecycler()
         getOrders()

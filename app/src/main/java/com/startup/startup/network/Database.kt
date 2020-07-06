@@ -1,9 +1,11 @@
 package com.startup.startup.network
 
+import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.datamodels.CustomerProfile
 
 class Database {
@@ -113,18 +115,34 @@ class Database {
             .child("orders").child(orderId)
     }
 
-    fun createItemInShop(shopId: String, map: HashMap<String, Any>): Task<Void> {
+    fun createItemInShop(shopId: String, map: HashMap<String, Any>, imagePath: Uri? = null): Task<Void> {
         val itemid =  FirebaseDatabase.getInstance().reference
             .child("items").child(shopId).push().key!!
+
+        if(imagePath != null){
+            FirebaseStorage.getInstance().reference
+                .child("items").child(itemid).putFile(imagePath)
+        }
 
         return FirebaseDatabase.getInstance().reference
             .child("items").child(shopId).child(itemid).setValue(map)
     }
 
-    fun editItemInShop(shopId: String, itemId: String, map: HashMap<String, Any>): Task<Void>{
+    fun editItemInShop(shopId: String, itemId: String, map: HashMap<String, Any>, imagePath: Uri? = null): Task<Void>{
         val ref = FirebaseDatabase.getInstance().reference
             .child("items").child(shopId).child(itemId)
 
+        if(imagePath != null){
+            FirebaseStorage.getInstance().reference
+                .child("items").child(itemId).putFile(imagePath)
+        }
+
         return ref.updateChildren(map)
+    }
+
+    fun markedOrderPacked(orderId: String, status: String): Task<Void>{
+        return FirebaseDatabase.getInstance().reference
+            .child("orders").child(orderId)
+            .child("status").setValue(status)
     }
 }

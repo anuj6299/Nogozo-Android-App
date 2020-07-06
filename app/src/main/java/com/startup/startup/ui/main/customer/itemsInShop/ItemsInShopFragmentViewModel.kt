@@ -41,6 +41,7 @@ class ItemsInShopFragmentViewModel
                             i.itemPrice = v["itemprice"]!!
                             i.itemQuantity = v["quantity"]
                             i.isAvailable = v["isAvailable"] == "true"
+                            i.itemImageUrl = v["itemimage"]
                             data.add(i)
                         }
                         items.postValue(DataResource.success(data))

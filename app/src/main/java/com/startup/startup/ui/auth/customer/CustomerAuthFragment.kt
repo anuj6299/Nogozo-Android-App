@@ -1,5 +1,6 @@
 package com.startup.startup.ui.auth.customer
 
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -105,6 +106,8 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
                                     }
 
                                     override fun onDataChange(snapshot: DataSnapshot) {
+                                        uploadToken()
+
                                         val customerProfile = snapshot.getValue<CustomerProfile>()
                                         if(customerProfile != null){
                                             if(customerProfile.profilelevel == PROFILE_LEVEL_0){
@@ -158,6 +161,7 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
                     val task = viewModel.register(email, password)
                     task.addOnCompleteListener{
                         if(task.isSuccessful){
+                            uploadToken()
                             viewModel.saveOnRegistered(email)
                             val i = Intent(context, UserDetailsActivity::class.java)
                             i.putExtra(USER_TYPE, userType_CUSTOMER)
@@ -185,6 +189,12 @@ class CustomerAuthFragment: BaseFragment(R.layout.fragment_auth_customer_signin)
 
     private fun showToast(msg: String){
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+    }
+
+    private fun uploadToken(){
+        val sp = context!!.getSharedPreferences("notification", MODE_PRIVATE)
+        if(sp.contains("token"))
+            viewModel.uploadToken(sp.getString("token","")!!)
     }
 
     private fun animate(){

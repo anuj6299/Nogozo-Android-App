@@ -29,7 +29,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Price ()"
+        android:hint="Price ( ₹ )"
         android:layout_margin="8dp"
         app:boxStrokeColor="@color/colorAccent"
         app:hintTextColor="@color/colorAccent"
@@ -71,6 +71,7 @@
         android:layout_margin="8dp"
         android:text="Upload Image(Optional)"
         app:layout_constraintStart_toEndOf="@id/editinventory_imageview"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editinventory_quantity_wrapper"/>
 
     <ImageView

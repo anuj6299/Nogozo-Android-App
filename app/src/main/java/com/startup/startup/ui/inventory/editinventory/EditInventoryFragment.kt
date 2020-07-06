@@ -1,20 +1,31 @@
 package com.startup.startup.ui.inventory.editinventory
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.R
 import com.startup.startup.datamodels.Item
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
 import com.startup.startup.ui.inventory.InventoryCommunicator
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import javax.inject.Inject
 
-class EditInventoryFragment(private val communicator: InventoryCommunicator): BaseFragment(R.layout.fragment_edit_inventory), View.OnClickListener {
+class EditInventoryFragment(
+    private val communicator: InventoryCommunicator
+): BaseFragment(R.layout.fragment_edit_inventory), View.OnClickListener {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -24,12 +35,15 @@ class EditInventoryFragment(private val communicator: InventoryCommunicator): Ba
     private lateinit var itemName: TextInputEditText
     private lateinit var itemPrice: TextInputEditText
     private lateinit var itemQuantity: TextInputEditText
+    private lateinit var imageView: ImageView
     private lateinit var imageButton: Button
     private lateinit var done: MaterialButton
 
     private var oldItem: Item? = null
     private var newItem: Item? = null
     private var isNew: Boolean = true
+    private var imageChange = false
+    private var imageUri: Uri? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -38,6 +52,7 @@ class EditInventoryFragment(private val communicator: InventoryCommunicator): Ba
         itemName = view.findViewById(R.id.editinventory_name_field)
         itemPrice = view.findViewById(R.id.editinventory_price_field)
         itemQuantity = view.findViewById(R.id.editinventory_quantity_field)
+        imageView = view.findViewById(R.id.editinventory_imageview)
         imageButton = view.findViewById(R.id.editinventory_imagebutton)
         imageButton.setOnClickListener(this)
         done = view.findViewById(R.id.editinventory_done)
@@ -65,11 +80,21 @@ class EditInventoryFragment(private val communicator: InventoryCommunicator): Ba
         itemName.setText(item.itemName)
         itemPrice.setText(item.itemPrice)
         itemQuantity.setText(item.itemQuantity)
+        val imageRef = FirebaseStorage.getInstance().reference.child("items/${item.itemId}")
+        Glide.with(this)
+            .load(imageRef)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(imageView)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.editinventory_imagebutton -> {}
+            R.id.editinventory_imagebutton -> {
+                CropImage.activity().setGuidelines(CropImageView.Guidelines.ON)
+                    .setAspectRatio(1,1)
+                    .setRequestedSize(100,100)
+                    .start(context!!, this)
+            }
             R.id.editinventory_done -> {
                 val name = itemName.text.toString()
                 val price = itemPrice.text.toString()
@@ -84,22 +109,38 @@ class EditInventoryFragment(private val communicator: InventoryCommunicator): Ba
                 map["quantity"] = quantity
                 if(isNew){
                     map["isAvailable"] = "true"
-                    viewModel.createItem(map).addOnCompleteListener{
+                    viewModel.createItem(map, imageUri).addOnCompleteListener{
                         if(it.isSuccessful){
                             Toast.makeText(context, "Update Successful", Toast.LENGTH_SHORT).show()
                             communicator.onBackPressedFromEdit()
                         }
                     }
                 }else{
-                    if(oldItem!!.equalsTo(newItem))
+                    if(oldItem!!.equalsTo(newItem) && !imageChange)
                         return
 
-                    viewModel.updateItem(oldItem!!.itemId!!, map).addOnCompleteListener{
+                    viewModel.updateItem(oldItem!!.itemId!!, map, imageUri).addOnCompleteListener{
                         if(it.isSuccessful){
                             Toast.makeText(context, "Update Successful", Toast.LENGTH_SHORT).show()
                             communicator.onBackPressedFromEdit()
                         }
                     }
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode){
+            CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
+                val result = CropImage.getActivityResult(data)
+                if(resultCode == RESULT_OK){
+                    imageChange = true
+                    imageUri = result.uri
+                    imageView.setImageURI(imageUri)
+                }else{
+                    Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_SHORT).show()
                 }
             }
         }

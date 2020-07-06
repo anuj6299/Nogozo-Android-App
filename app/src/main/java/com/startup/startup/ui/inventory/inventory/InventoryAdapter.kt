@@ -8,13 +8,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.R
 import com.startup.startup.datamodels.Item
 
 class InventoryAdapter(private var inventoryItemClick: OnInventoryItemClick): RecyclerView.Adapter<InventoryAdapter.InventoryViewHolder>(){
 
     private var items: ArrayList<Item> = ArrayList()
+    private val itemImageBaseUrl = FirebaseStorage.getInstance().reference.child("items")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_inventory, parent, false)
@@ -27,13 +30,14 @@ class InventoryAdapter(private var inventoryItemClick: OnInventoryItemClick): Re
 
     override fun onBindViewHolder(holder: InventoryViewHolder, position: Int) {
         holder.itemName.text = items[position].itemName
-        holder.itemPrice.text = items[position].itemPrice
+        holder.itemPrice.text = "₹${items[position].itemPrice}"
         holder.itemQuantity.text = items[position].itemQuantity
         items[position].isAvailable?.let{
             holder.itemSwitch.isChecked = it
         }
         Glide.with(holder.itemView.context)
-            .load(items[position].itemImageUrl)
+            .load(itemImageBaseUrl.child(items[position].itemId!!))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(holder.itemImage)
     }
 

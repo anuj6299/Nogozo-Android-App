@@ -1,5 +1,6 @@
 package com.startup.startup.ui.auth.vendor
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -94,6 +95,7 @@ class VendorAuthFragment: BaseFragment(R.layout.fragment_auth_vendor_signin),Vie
                                                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                                 startActivity(i)
                                             }
+                                            uploadToken()
                                         }else{
                                             progressBar.visibility = View.GONE
                                             FirebaseAuth.getInstance().signOut()
@@ -123,5 +125,11 @@ class VendorAuthFragment: BaseFragment(R.layout.fragment_auth_vendor_signin),Vie
 
     private fun showToast(msg: String){
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+    }
+
+    fun uploadToken(){
+        val sp = context!!.getSharedPreferences("notification", Context.MODE_PRIVATE)
+        if(sp.contains("token"))
+            viewModel.uploadToken(sp.getString("token","")!!)
     }
 }

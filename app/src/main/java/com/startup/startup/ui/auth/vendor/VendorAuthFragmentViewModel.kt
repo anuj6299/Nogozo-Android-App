@@ -14,7 +14,7 @@ class VendorAuthFragmentViewModel
     private val sessionManager: SessionManager
 ):ViewModel() {
 
-    suspend fun login(email: String, password: String): Task<AuthResult> {
+    fun login(email: String, password: String): Task<AuthResult> {
         return sessionManager.login(email, password)
     }
 
@@ -23,10 +23,14 @@ class VendorAuthFragmentViewModel
     }
 
     fun saveProfileToLocal(profile: CustomerProfile){
-        sessionManager.saveCustomerProfileToLocal(profile)
+        sessionManager.saveProfileToLocal(profile)
     }
 
     fun saveOnLogged(email: String){
         sessionManager.saveOnLogged(email, userType_VENDOR)
+    }
+
+    fun uploadToken(token: String){
+        sessionManager.uploadToken(token)
     }
 }

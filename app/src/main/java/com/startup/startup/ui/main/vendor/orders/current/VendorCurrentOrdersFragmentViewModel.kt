@@ -11,6 +11,7 @@ import com.startup.startup.SessionManager
 import com.startup.startup.datamodels.Order
 import com.startup.startup.network.Database
 import com.startup.startup.ui.main.DataResource
+import com.startup.startup.ui.main.vendor.orders.OrderAdapter
 import javax.inject.Inject
 
 class VendorCurrentOrdersFragmentViewModel
@@ -59,6 +60,7 @@ class VendorCurrentOrdersFragmentViewModel
 
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val order = snapshot.getValue<Order>()!!
+                    order.orderId = snapshot.key!!
                     if(currentOrders.value!!.data.isNullOrEmpty()){
                         val arrayList: ArrayList<Order> = ArrayList()
                         arrayList.add(order)

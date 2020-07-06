@@ -48,6 +48,9 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
     private var selectedArea: Area? = null
     private var selectedAddress: String? = null
 
+    private var oldProfile: CustomerProfile? = null
+    private var newProfile: CustomerProfile? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
 
         viewModel = ViewModelProvider(this, factory)[CustomerProfileFragmentViewModel::class.java]
@@ -73,13 +76,29 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
             when(it.status){
                 DataResource.Status.SUCCESS -> {
                     setDatatoViews(it.data)
+                    newProfile = CustomerProfile()
+
+                    newProfile!!.name = it.data.name
+                    newProfile!!.phone = it.data.phone
+                    newProfile!!.cityid = it.data.cityid
+                    newProfile!!.cityname = it.data.cityname
+                    newProfile!!.areaname = it.data.areaname
+                    newProfile!!.areaid = it.data.areaid
+                    newProfile!!.email = it.data.email
+                    newProfile!!.address = it.data.address
+                    newProfile!!.profilelevel = it.data.profilelevel
+
+                    oldProfile = it.data
+                    confirmButton.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
                 }
                 DataResource.Status.LOADING -> {
                     progressBar.visibility = View.VISIBLE
+                    confirmButton.visibility = View.INVISIBLE
                 }
                 DataResource.Status.ERROR -> {
                     progressBar.visibility = View.GONE
+                    confirmButton.visibility = View.INVISIBLE
                 }
             }
         })
@@ -212,6 +231,8 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
                 return
             }
         }
+        newProfile!!.cityid = city.cityId
+        newProfile!!.cityname = city.cityName
         selectedCity = city
         citySpinner.text = city.cityName
         selectedArea = null
@@ -223,6 +244,8 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
     private fun onAreaSelected(area: Area){
         selectedArea = area
         areaSpinner.text = area.areaName
+        newProfile!!.areaid = area.areaId
+        newProfile!!.areaname = area.areaName
         //addressCard.visibility = View.VISIBLE
         checkAndShowButton()
     }
@@ -232,6 +255,10 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
         val name = nameField.text.toString()
         val phone = phoneField.text.toString()
         val address = addressField.text.toString()
+
+        newProfile!!.name = name
+        newProfile!!.phone = phone
+        newProfile!!.address = address
 
         if(name.isEmpty()){
             Toast.makeText(context, "Please Enter Name", Toast.LENGTH_SHORT).show()
@@ -248,6 +275,11 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
             return
         }
 
+        if(oldProfile!!.equalsTo(newProfile)){
+            Toast.makeText(context, "No changes", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val map: HashMap<String, Any> = HashMap()
         map["name"] = name
         map["phone"] = phone
@@ -258,9 +290,20 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
         map["areaid"] = selectedArea!!.areaId
         map["profilelevel"] = Constants.PROFILE_LEVEL_1
 
+        newProfile!!.profilelevel = Constants.PROFILE_LEVEL_1
+
         viewModel.updateUserProfile(map).addOnCompleteListener{
             if(it.isSuccessful){
                 viewModel.saveProfileToLocal(map)
+                oldProfile!!.name = newProfile!!.name
+                oldProfile!!.phone = newProfile!!.phone
+                oldProfile!!.cityid = newProfile!!.cityid
+                oldProfile!!.cityname = newProfile!!.cityname
+                oldProfile!!.areaname = newProfile!!.areaname
+                oldProfile!!.areaid = newProfile!!.areaid
+                oldProfile!!.email = newProfile!!.email
+                oldProfile!!.address = newProfile!!.address
+                oldProfile!!.profilelevel = newProfile!!.profilelevel
                 showToast("Profile Updated")
             }
         }

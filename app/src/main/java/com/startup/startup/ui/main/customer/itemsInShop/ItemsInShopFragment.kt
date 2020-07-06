@@ -71,7 +71,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
 
     private fun initRecycler(){
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.addItemDecoration(VerticalSpacingItemDecoration(16))
+        recyclerView.addItemDecoration(VerticalSpacingItemDecoration(8))
         adapter = ItemsInShopAdapter()
         recyclerView.adapter = adapter
     }
@@ -83,7 +83,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
                 proceedButton.visibility = View.INVISIBLE
             }else{
                 proceedButton.visibility = View.VISIBLE
-                proceedButton.text = "Total Price: ₹$it"
+                proceedButton.text = "Total Price: ₹$it\nGoto Cart >"
             }
             price = it.toString()
         })
@@ -122,7 +122,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
                         orderData["shopname"] = shop!!.shopName!!
                         orderData["shopaddress"] = shop!!.shopAddress!!
                         orderData["price"] = price
-                        orderData["status"] = "0"
+                        orderData["status"] = "New Order"
                         orderData["items"] = map
                         i.putExtra("order", orderData)
                         startActivity(i)

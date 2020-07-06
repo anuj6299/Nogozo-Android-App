@@ -3,6 +3,7 @@ package com.startup.startup.ui.main.vendor.orders.current
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -25,13 +26,18 @@ import com.startup.startup.ui.inventory.VendorInventoryActivity
 import com.startup.startup.ui.main.Communicator
 import com.startup.startup.ui.main.DataResource
 import com.startup.startup.ui.main.vendor.orders.OrderAdapter
+import com.startup.startup.ui.orders.OrdersActivity
 import com.startup.startup.ui.profile.ProfileActivity
 import com.startup.startup.ui.splash.SplashActivity
-import com.startup.startup.util.Constants
+import com.startup.startup.util.Constants.USER_TYPE
+import com.startup.startup.util.Constants.userType_VENDOR
 import com.startup.startup.util.VerticalSpacingItemDecoration
 import javax.inject.Inject
 
-class VendorCurrentOrdersFragment(private val communicator: Communicator): BaseFragment(R.layout.fragment_main_currentorder_vendor){
+class VendorCurrentOrdersFragment(
+    private val communicator: Communicator
+): BaseFragment(R.layout.fragment_main_currentorder_vendor),
+    View.OnClickListener{
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -44,6 +50,7 @@ class VendorCurrentOrdersFragment(private val communicator: Communicator): BaseF
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var headerProfile: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -51,6 +58,8 @@ class VendorCurrentOrdersFragment(private val communicator: Communicator): BaseF
 
         recyclerView = view.findViewById(R.id.currentorder_vendor_recyclerview)
         progressBar = view.findViewById(R.id.fragment_currentorder_vendor_progressBar)
+        headerProfile = view.findViewById(R.id.vendor_main_header_profile)
+        headerProfile.setOnClickListener(this)
 
         buildDrawer()
         initRecycler()
@@ -77,17 +86,18 @@ class VendorCurrentOrdersFragment(private val communicator: Communicator): BaseF
                         0 -> {
                             val i = Intent(context, VendorInventoryActivity::class.java)
                             startActivity(i)
-                            Toast.makeText(context, "Coming Soon...", Toast.LENGTH_SHORT).show()
                         }
                         1-> {
-                            Toast.makeText(context, "Coming Soon...", Toast.LENGTH_SHORT).show()
+                            val i = Intent(context, OrdersActivity::class.java)
+                            i.putExtra(USER_TYPE, userType_VENDOR)
+                            startActivity(i)
                         }
                         2-> {
                             Toast.makeText(context, "Coming Soon...", Toast.LENGTH_SHORT).show()
                         }
                         3 -> {
                             val i = Intent(context!!, ProfileActivity::class.java)
-                            i.putExtra(Constants.USER_TYPE, Constants.userType_VENDOR)
+                            i.putExtra(USER_TYPE, userType_VENDOR)
                             startActivity(i)
                         }
                         5 -> {
@@ -134,7 +144,7 @@ class VendorCurrentOrdersFragment(private val communicator: Communicator): BaseF
         viewModel.getCurrentOrders()
     }
 
-//    fun onBackPressed(): Boolean{
+    //    fun onBackPressed(): Boolean{
 //        shopDrawer?.let {
 //            if(it.isDrawerOpen){
 //                it.closeDrawer()
@@ -143,4 +153,11 @@ class VendorCurrentOrdersFragment(private val communicator: Communicator): BaseF
 //        }
 //        return false
 //    }
+    override fun onClick(v: View?) {
+        when(v!!.id){
+            R.id.vendor_main_header_profile -> {
+                shopDrawer?.openDrawer()
+            }
+        }
+    }
 }
