@@ -92,7 +92,6 @@ class Database {
             .child(shopId).child("status")
     }
 
-
     fun createOrder(): DatabaseReference{
         return FirebaseDatabase.getInstance().reference
             .child("orders").push()
@@ -113,6 +112,13 @@ class Database {
     fun getOrderDetails(orderId: String): DatabaseReference{
         return FirebaseDatabase.getInstance().reference
             .child("orders").child(orderId)
+    }
+
+    fun changeShopStatus(shopId: String,status: String, userType: String): Task<Void>{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child(userType)
+            .child(shopId).child("status")
+            .setValue(status)
     }
 
     fun createItemInShop(shopId: String, map: HashMap<String, Any>, imagePath: Uri? = null): Task<Void> {

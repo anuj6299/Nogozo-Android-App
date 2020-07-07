@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.R
 import com.startup.startup.datamodels.Services
 
 class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickInterface): RecyclerView.Adapter<ServicesListAdapter.ServicesViewHolder>() {
 
     private var dataList: List<Services> = ArrayList()
+    private var storage = FirebaseStorage.getInstance().reference.child("services")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServicesViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_service, parent, false)
@@ -28,7 +30,7 @@ class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickI
     override fun onBindViewHolder(holder: ServicesViewHolder, position: Int) {
         holder.textView.text = dataList[position].serviceName
         Glide.with(holder.itemView.context)
-            .load(dataList[position].imageUrl)
+            .load(storage.child(dataList[position].serviceId))
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(holder.imageView)
     }

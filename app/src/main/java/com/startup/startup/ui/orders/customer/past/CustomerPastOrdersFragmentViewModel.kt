@@ -21,12 +21,19 @@ constructor(
 ): ViewModel() {
 
     private var pastOrders: MediatorLiveData<DataResource<ArrayList<Order>>> = MediatorLiveData()
+    private val temparrayList: ArrayList<Order> = ArrayList()
 
     fun getLiveData(): LiveData<DataResource<ArrayList<Order>>> {
         return pastOrders
     }
 
     fun getPastOrderOrders(){
+        if(pastOrders.value != null){
+            if(pastOrders.value!!.status == DataResource.Status.LOADING)
+                return
+        }
+
+        pastOrders.value = DataResource.loading()
         Database().getPastOrder(Constants.userType_CUSTOMER, sessionManager.getUserId())
             .addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
@@ -56,18 +63,16 @@ constructor(
                 }
 
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    println(snapshot)
                     val order = snapshot.getValue<Order>()!!
-                    if(pastOrders.value == null){
-                        val arrayList: ArrayList<Order> = ArrayList()
-                        arrayList.add(order)
-                        pastOrders.value = DataResource.success(arrayList)
-                    }else{
-                        val list = pastOrders.value!!.data
-                        list.add(order)
-                        pastOrders.value = DataResource.success(list)
+                    order.orderId = snapshot.key!!
+                    temparrayList.add(order)
+
+                    if(temparrayList.size == orderId.size){
+                        pastOrders.value = DataResource.success(temparrayList.clone() as ArrayList<Order>)
+                        temparrayList.clear()
                     }
                 }
+
             })
         }
     }

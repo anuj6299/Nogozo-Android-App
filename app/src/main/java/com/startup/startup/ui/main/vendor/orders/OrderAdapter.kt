@@ -32,9 +32,11 @@ class OrderAdapter(
     }
 
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
-        holder.dateTime.text = "${orderList[position].date}\n${orderList[position].time}"
+        if(showPackedButton)
+            holder.shopName.visibility = View.GONE
+        holder.shopName.text = orderList[position].shopname
+        holder.dateTime.text = "${orderList[position].date} on ${orderList[position].time}"
         holder.price.text = "₹${orderList[position].price}"
-        holder.status.text = orderList[position].status
 
         //items stored in map under each order
         var items = ""
@@ -42,12 +44,40 @@ class OrderAdapter(
             val item = values as HashMap<String, String>
             items += "${item["times"]} x ${item["itemname"]}(${item["quantity"]})\n"
         }
+        items = items.removeSuffix("\n")
         holder.items.text = items
-        if(!showPackedButton)
-            holder.markedPacked.visibility = View.GONE
 
-        if(orderList[position].status != "New Order")
+        if(showPackedButton){
+            when (orderList[position].status) {
+                "0" -> {
+                    holder.status.text = "New Order"
+                    holder.markedPacked.visibility = View.VISIBLE
+                }
+                "1" -> {
+                    holder.markedPacked.visibility = View.GONE
+                    holder.status.text = "Delivery Executive will pickUp Order"
+                }
+                "2" -> {
+                    holder.markedPacked.visibility = View.GONE
+                    holder.status.text = "Complete"
+                }
+                "3" -> {
+                    holder.markedPacked.visibility = View.GONE
+                    holder.status.text = "Delivered"
+                }
+            }
+        }
+        else{
             holder.markedPacked.visibility = View.GONE
+            if(orderList[position].status == "0")
+                holder.status.text = "Packing Your Order"
+            else if(orderList[position].status == "1")
+                holder.status.text = "Delivery Executive reaching to Shop"
+            else if(orderList[position].status == "2")
+                holder.status.text = "Out For Delivery"
+            else if(orderList[position].status == "3")
+                holder.status.text = "Delivered"
+        }
     }
 
     fun setList(dataList: ArrayList<Order>){
@@ -61,6 +91,7 @@ class OrderAdapter(
     }
 
     inner class OrderViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener{
+        val shopName: TextView = itemView.findViewById(R.id.list_item_current_order_shopname)
         val dateTime: TextView = itemView.findViewById(R.id.list_item_current_order_date_time)
         val price: TextView = itemView.findViewById(R.id.list_item_current_order_price)
         val items: TextView = itemView.findViewById(R.id.list_item_current_order_items)
@@ -72,9 +103,9 @@ class OrderAdapter(
 
         override fun onClick(v: View?) {
             if(v!!.id == R.id.list_item_current_order_markpacked_button){
-                Database().markedOrderPacked(orderList[adapterPosition].orderId, "Packed").addOnCompleteListener{
+                Database().markedOrderPacked(orderList[adapterPosition].orderId, "1").addOnCompleteListener{
                     if(it.isSuccessful){
-                        orderList[adapterPosition].status = "Packed"
+                        orderList[adapterPosition].status = "1"
                         notifyDataSetChanged()
                     }
                 }

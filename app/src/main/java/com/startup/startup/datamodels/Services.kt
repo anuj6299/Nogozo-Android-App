@@ -7,7 +7,7 @@ class Services {
 
     var imageUrl: String? = null
 
-    constructor(serviceId: String, serviceName: String, imageUrl: String){
+    constructor(serviceId: String, serviceName: String, imageUrl: String?){
         this.serviceId = serviceId
         this.serviceName = serviceName
         this.imageUrl = imageUrl

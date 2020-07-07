@@ -25,6 +25,25 @@
 <!--            app:layout_constraintStart_toStartOf="parent"-->
 <!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
+        <TextView
+            android:id="@+id/vendor_main_header_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/red"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/vendor_main_header_shopstatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_power"
+            android:backgroundTint="#00FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/vendor_main_header_profile"/>
         <ImageButton
             android:id="@+id/vendor_main_header_profile"
             android:layout_width="wrap_content"
@@ -41,12 +60,14 @@
         android:id="@+id/fragment_currentorder_vendor_progressBar"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/currentorder_vendor_swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="8dp"

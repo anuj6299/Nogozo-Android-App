@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -38,6 +39,7 @@ class EditInventoryFragment(
     private lateinit var imageView: ImageView
     private lateinit var imageButton: Button
     private lateinit var done: MaterialButton
+    private lateinit var header: TextView
 
     private var oldItem: Item? = null
     private var newItem: Item? = null
@@ -52,6 +54,7 @@ class EditInventoryFragment(
         itemName = view.findViewById(R.id.editinventory_name_field)
         itemPrice = view.findViewById(R.id.editinventory_price_field)
         itemQuantity = view.findViewById(R.id.editinventory_quantity_field)
+        header = view.findViewById(R.id.editinventory_header)
         imageView = view.findViewById(R.id.editinventory_imageview)
         imageButton = view.findViewById(R.id.editinventory_imagebutton)
         imageButton.setOnClickListener(this)
@@ -77,6 +80,7 @@ class EditInventoryFragment(
     }
 
     private fun setDataToViews(item: Item){
+        header.text = "Change Item Details"
         itemName.setText(item.itemName)
         itemPrice.setText(item.itemPrice)
         itemQuantity.setText(item.itemQuantity)

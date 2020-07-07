@@ -21,12 +21,19 @@ class CustomerCurrentOrdersFragmentViewModel
     ): ViewModel() {
 
     private var currentOrders: MediatorLiveData<DataResource<ArrayList<Order>>> = MediatorLiveData()
+    private var temparrayList: ArrayList<Order> = ArrayList()
 
     fun getLiveData(): LiveData<DataResource<ArrayList<Order>>> {
         return currentOrders
     }
 
     fun getCurrentOrderOrders(){
+        if(currentOrders.value != null){
+            if(currentOrders.value!!.status == DataResource.Status.LOADING){
+                return
+            }
+        }
+        currentOrders.value = DataResource.loading()
         Database().getCurrentOrders(userType_CUSTOMER, sessionManager.getUserId())
             .addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
@@ -55,16 +62,13 @@ class CustomerCurrentOrdersFragmentViewModel
                 }
 
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    println(snapshot)
                     val order = snapshot.getValue<Order>()!!
-                    if(currentOrders.value == null){
-                        val arrayList: ArrayList<Order> = ArrayList()
-                        arrayList.add(order)
-                        currentOrders.value = DataResource.success(arrayList)
-                    }else{
-                        val list = currentOrders.value!!.data
-                        list.add(order)
-                        currentOrders.value = DataResource.success(list)
+                    order.orderId = snapshot.key!!
+                    temparrayList.add(order)
+
+                    if(temparrayList.size == orderId.size){
+                        currentOrders.value = DataResource.success(temparrayList.clone() as ArrayList<Order>)
+                        temparrayList.clear()
                     }
                 }
             })

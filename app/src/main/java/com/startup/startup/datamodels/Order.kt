@@ -11,7 +11,8 @@ data class Order(
     var datetime: String = "-1",
     var status: String = "-1",
     var price: String = "0",
-    var shopId: String = "-1",
+    var shopid: String = "-1",
+    var shopname: String = "",
     var customername: String = "-1",
     var customeraddress: String = "-1",
     var customerphone: String = "-1"

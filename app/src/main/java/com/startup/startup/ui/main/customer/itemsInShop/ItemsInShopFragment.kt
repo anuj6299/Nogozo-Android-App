@@ -119,10 +119,10 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
                         i.putExtra(USER_TYPE, userType_CUSTOMER)
                         val orderData: HashMap<String, Any> = HashMap()
                         orderData["shopid"] = shop!!.shopId
-                        orderData["shopname"] = shop!!.shopName!!
+                        orderData["shopname"] = shop!!.shopName
                         orderData["shopaddress"] = shop!!.shopAddress!!
                         orderData["price"] = price
-                        orderData["status"] = "New Order"
+                        orderData["status"] = "0"
                         orderData["items"] = map
                         i.putExtra("order", orderData)
                         startActivity(i)

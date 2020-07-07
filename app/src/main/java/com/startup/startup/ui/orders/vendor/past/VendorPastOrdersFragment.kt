@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.startup.startup.R
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
@@ -27,17 +28,24 @@ class VendorPastOrdersFragment: BaseFragment(R.layout.fragment_orders) {
     private lateinit var header: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var adapter: OrderAdapter
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private lateinit var viewModel: VendorPastOrdersFragmentViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this, factory)[VendorPastOrdersFragmentViewModel::class.java]
 
+        swipeRefresh = view.findViewById(R.id.customer_order_swipeRefresh)
         progressBar = view.findViewById(R.id.customer_order_progressbar)
         recyclerView = view.findViewById(R.id.customer_order_recyclerView)
         header = view.findViewById(R.id.customer_order_header)
         header.text = "Past Orders"
         header.visibility = View.VISIBLE
+
+        swipeRefresh.setOnRefreshListener{
+            swipeRefresh.isRefreshing = false
+            viewModel.getPastOrderOrders()
+        }
 
         initRecycler()
         getOrders()
@@ -45,7 +53,7 @@ class VendorPastOrdersFragment: BaseFragment(R.layout.fragment_orders) {
 
     private fun initRecycler(){
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.addItemDecoration(VerticalSpacingItemDecoration(8))
+        recyclerView.addItemDecoration(VerticalSpacingItemDecoration(16))
         adapter = OrderAdapter()
         recyclerView.adapter = adapter
     }

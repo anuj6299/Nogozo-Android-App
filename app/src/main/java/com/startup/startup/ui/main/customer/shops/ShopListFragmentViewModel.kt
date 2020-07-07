@@ -16,16 +16,23 @@ import javax.inject.Inject
 class ShopListFragmentViewModel
     @Inject
     constructor(
-        var sessionManager: SessionManager
+        private val sessionManager: SessionManager,
+        private val database: Database
     ): ViewModel() {
 
     private val shopList: MediatorLiveData<DataResource<ArrayList<Shop>>> = MediatorLiveData()
 
-    fun getShopsList(serviceId: String): LiveData<DataResource<ArrayList<Shop>>> {
+    fun getShopsList(serviceId: String) {
+
+        if(shopList.value != null){
+            if(shopList.value!!.status == DataResource.Status.LOADING){
+                return
+            }
+        }
 
         shopList.value = DataResource.loading()
 
-        Database().getShops(serviceId, sessionManager.getAreaId())
+        database.getShops(serviceId, sessionManager.getAreaId())
             .addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
                     shopList.value = DataResource.error(error.message)
@@ -47,7 +54,9 @@ class ShopListFragmentViewModel
                     }
                 }
             })
+    }
 
+    fun getShopLiveData(): LiveData<DataResource<ArrayList<Shop>>>{
         return shopList
     }
 }

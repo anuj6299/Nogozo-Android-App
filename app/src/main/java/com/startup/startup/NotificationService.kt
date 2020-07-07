@@ -27,7 +27,6 @@ class NotificationService: FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        createNotification("fake title", "fake body")
         if(remoteMessage.notification != null){
             createNotification(remoteMessage.notification!!.title!!, remoteMessage.notification!!.body!!)
         }

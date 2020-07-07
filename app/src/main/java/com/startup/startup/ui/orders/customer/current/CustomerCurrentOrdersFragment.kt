@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.startup.startup.R
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
@@ -26,6 +27,7 @@ class CustomerCurrentOrdersFragment: BaseFragment(R.layout.fragment_orders) {
     private lateinit var header: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var adapter: OrderAdapter
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private lateinit var viewModel: CustomerCurrentOrdersFragmentViewModel
 
@@ -35,8 +37,14 @@ class CustomerCurrentOrdersFragment: BaseFragment(R.layout.fragment_orders) {
 
         progressBar = view.findViewById(R.id.customer_order_progressbar)
         recyclerView = view.findViewById(R.id.customer_order_recyclerView)
+        swipeRefresh = view.findViewById(R.id.customer_order_swipeRefresh)
         //header = view.findViewById(R.id.customer_order_header)
         //header.text = "Current Orders"
+
+        swipeRefresh.setOnRefreshListener{
+            swipeRefresh.isRefreshing = false
+            viewModel.getCurrentOrderOrders()
+        }
 
         initRecycler()
         getOrders()
@@ -44,7 +52,7 @@ class CustomerCurrentOrdersFragment: BaseFragment(R.layout.fragment_orders) {
 
     private fun initRecycler(){
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.addItemDecoration(VerticalSpacingItemDecoration(8))
+        recyclerView.addItemDecoration(VerticalSpacingItemDecoration(16))
         adapter = OrderAdapter()
         recyclerView.adapter = adapter
     }

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.startup.startup.R
 import com.startup.startup.ui.BaseActivity
 import com.startup.startup.ui.profile.customer.CustomerProfileFragment
+import com.startup.startup.ui.profile.vendor.VendorProfileFragment
 import com.startup.startup.util.Constants.USER_TYPE
 import com.startup.startup.util.Constants.userType_CUSTOMER
 import com.startup.startup.util.Constants.userType_VENDOR
@@ -19,6 +20,7 @@ class ProfileActivity : BaseActivity() {
         if(userType == userType_CUSTOMER){
             startFragment(CustomerProfileFragment())
         }else if(userType == userType_VENDOR){
+            startFragment(VendorProfileFragment())
             Toast.makeText(this, "Coming Soon...", Toast.LENGTH_SHORT).show()
         }
     }

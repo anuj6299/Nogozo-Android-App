@@ -21,12 +21,20 @@ class VendorPastOrdersFragmentViewModel
     ): ViewModel(){
 
     private var pastOrders: MediatorLiveData<DataResource<ArrayList<Order>>> = MediatorLiveData()
+    private var temparrayList: ArrayList<Order> = ArrayList()
 
     fun getLiveData(): LiveData<DataResource<ArrayList<Order>>> {
         return pastOrders
     }
 
     fun getPastOrderOrders(){
+        if(pastOrders.value != null){
+            if(pastOrders.value!!.status == DataResource.Status.LOADING){
+                return
+            }
+        }
+        pastOrders.value = DataResource.loading()
+
         Database().getPastOrder(userType_VENDOR, sessionManager.getUserId())
             .addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
@@ -50,21 +58,18 @@ class VendorPastOrdersFragmentViewModel
 
     private fun getOrderDetails(orderId: Set<String>){
         for(key in orderId){
-            Database().getOrderDetails(key).addListenerForSingleValueEvent(object:
-                ValueEventListener {
+            Database().getOrderDetails(key).addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
                 }
 
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val order = snapshot.getValue<Order>()!!
-                    if(pastOrders.value == null){
-                        val arrayList: ArrayList<Order> = ArrayList()
-                        arrayList.add(order)
-                        pastOrders.value = DataResource.success(arrayList)
-                    }else{
-                        val list = pastOrders.value!!.data
-                        list.add(order)
-                        pastOrders.value = DataResource.success(list)
+                    order.orderId = snapshot.key!!
+                    temparrayList.add(order)
+
+                    if(temparrayList.size == orderId.size){
+                        pastOrders.value = DataResource.success(temparrayList.clone() as ArrayList<Order>)
+                        temparrayList.clear()
                     }
                 }
             })

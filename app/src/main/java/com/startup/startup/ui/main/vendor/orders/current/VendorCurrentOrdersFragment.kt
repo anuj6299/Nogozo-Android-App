@@ -3,15 +3,14 @@ package com.startup.startup.ui.main.vendor.orders.current
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.DividerDrawerItem
@@ -47,10 +46,14 @@ class VendorCurrentOrdersFragment(
     lateinit var viewModel: VendorCurrentOrdersFragmentViewModel
     private lateinit var adapter: OrderAdapter
     private var shopDrawer: Drawer? = null
+    private var shopStatus: String = ""
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
-    private lateinit var headerProfile: ImageView
+    private lateinit var headerProfile: ImageButton
+    private lateinit var headerPower: ImageButton
+    private lateinit var headerStatus: TextView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -58,13 +61,23 @@ class VendorCurrentOrdersFragment(
 
         recyclerView = view.findViewById(R.id.currentorder_vendor_recyclerview)
         progressBar = view.findViewById(R.id.fragment_currentorder_vendor_progressBar)
+        headerStatus = view.findViewById(R.id.vendor_main_header_status)
         headerProfile = view.findViewById(R.id.vendor_main_header_profile)
+        headerPower = view.findViewById(R.id.vendor_main_header_shopstatus)
+        swipeRefresh = view.findViewById(R.id.currentorder_vendor_swipeRefresh)
+        headerPower.setOnClickListener(this)
         headerProfile.setOnClickListener(this)
 
         buildDrawer()
         initRecycler()
 
+        swipeRefresh.setOnRefreshListener{
+            swipeRefresh.isRefreshing = false
+            viewModel.getCurrentOrders()
+        }
+
         getCurrentOrders()
+        getCurrentShopStatus()
     }
 
     private fun buildDrawer(){
@@ -144,19 +157,39 @@ class VendorCurrentOrdersFragment(
         viewModel.getCurrentOrders()
     }
 
-    //    fun onBackPressed(): Boolean{
-//        shopDrawer?.let {
-//            if(it.isDrawerOpen){
-//                it.closeDrawer()
-//                return true
-//            }
-//        }
-//        return false
-//    }
+    fun getCurrentShopStatus(){
+        viewModel.getStatusLiveData().removeObservers(viewLifecycleOwner)
+        viewModel.getStatusLiveData().observe(viewLifecycleOwner, Observer{
+            if(it == "OPEN"){
+                shopStatus = "OPEN"
+                headerStatus.text = "your shop is $shopStatus"
+                headerStatus.setTextColor(resources.getColor(R.color.colorAccent, resources.newTheme()))
+            }
+            else if(it == "CLOSED"){
+                shopStatus = "CLOSED"
+                headerStatus.text = "your shop is $shopStatus.To change -->"
+                headerStatus.setTextColor(resources.getColor(R.color.red, resources.newTheme()))
+            }
+        })
+        viewModel.getCurrentShopStatus()
+    }
+
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.vendor_main_header_profile -> {
                 shopDrawer?.openDrawer()
+            }
+            R.id.vendor_main_header_shopstatus -> {
+                var status = ""
+                if(shopStatus == "OPEN")
+                    status = "CLOSED"
+                else
+                    status = "OPEN"
+                viewModel.changeShopStatus(status).addOnCompleteListener{
+                    if(it.isSuccessful){
+                        Toast.makeText(context, "Your Shop is now $status", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

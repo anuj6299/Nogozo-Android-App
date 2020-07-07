@@ -30,8 +30,10 @@ constructor(
 
     fun getServices(){
 
-        if(isLoading)
-            return
+        if(services.value != null){
+            if(services.value!!.status == DataResource.Status.LOADING)
+                return
+        }
 
         services.value = DataResource.loading()
 
@@ -46,7 +48,7 @@ constructor(
                     val service = snapshot.value as HashMap<String, Any>
                     for((key, value) in service){
                         val a = value as HashMap<String, String>
-                        list.add(Services(key, a["servicename"]!!, a["imageurl"]!!))
+                        list.add(Services(key, a["servicename"]!!, a["imageurl"]))
                     }
                     services.postValue(DataResource.success(list))
                 }
