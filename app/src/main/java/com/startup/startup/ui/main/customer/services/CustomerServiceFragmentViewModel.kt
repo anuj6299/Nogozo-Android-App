@@ -7,10 +7,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.startup.startup.SessionManager
+import com.startup.startup.datamodels.Area
 import com.startup.startup.datamodels.Services
 import com.startup.startup.network.Database
 import com.startup.startup.ui.main.DataResource
+import com.startup.startup.ui.userdetails.CityResource
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +25,7 @@ constructor(
 ): ViewModel(){
 
     private val services: MediatorLiveData<DataResource<List<Services>>> = MediatorLiveData()
-    private var isLoading: Boolean = false
+    private var areas: MediatorLiveData<CityResource<ArrayList<Area>>> = MediatorLiveData()
 
     fun getLiveData(): LiveData<DataResource<List<Services>>>{
         return services
@@ -51,6 +54,30 @@ constructor(
                         list.add(Services(key, a["servicename"]!!, a["imageurl"]))
                     }
                     services.postValue(DataResource.success(list))
+                }
+            }
+        })
+    }
+
+    fun getAreaLiveData(): LiveData<CityResource<ArrayList<Area>>>{
+        return areas
+    }
+
+    fun getAreaOfCity(cityId: String){
+        areas.value = CityResource.loading()
+
+        Database().getAreas(cityId).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                areas.value = CityResource.error(error.message)
+            }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                CoroutineScope(Dispatchers.Default).launch{
+                    val list: ArrayList<Area> = ArrayList()
+                    val map = snapshot.value as HashMap<String, String>
+                    for((key, value) in map){
+                        list.add(Area(value, key))
+                    }
+                    areas.postValue(CityResource.success(list))
                 }
             }
         })

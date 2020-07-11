@@ -13,6 +13,7 @@ data class Order(
     var price: String = "0",
     var shopid: String = "-1",
     var shopname: String = "",
+    var shopinstruction: String? = "",
     var customername: String = "-1",
     var customeraddress: String = "-1",
     var customerphone: String = "-1"

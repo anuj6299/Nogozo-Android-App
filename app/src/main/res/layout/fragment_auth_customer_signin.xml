@@ -27,6 +27,16 @@
 <!--            android:inputType="textPersonName" />-->
 <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
+    <ImageView
+        android:id="@+id/icon_imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/app_icon"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/customer_email_wrapper"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -91,7 +101,7 @@
         android:layout_margin="16dp"
         android:text="LOGIN"
         android:textColor="#FFFFFF"
-        app:strokeColor="@color/colorAccent"
+        app:strokeColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/customer_password_wrapper" />
@@ -103,7 +113,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Don't have an Account? SignUp"
-        app:strokeColor="@color/colorAccent"
+        app:strokeColor="@color/colorPrimary"
         android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

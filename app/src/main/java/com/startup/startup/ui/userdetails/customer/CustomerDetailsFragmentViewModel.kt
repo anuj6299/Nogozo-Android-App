@@ -35,7 +35,6 @@ constructor(
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                println(snapshot.value)
                 CoroutineScope(Dispatchers.Default).launch{
                     val list: ArrayList<City> = ArrayList()
                     val map = snapshot.value as HashMap<String, String>

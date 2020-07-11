@@ -30,8 +30,7 @@ class VendorProfileFragmentViewModel
         }
 
         userProfile.value = DataResource.loading()
-        database.getUserProfile(Constants.userType_VENDOR).addListenerForSingleValueEvent(object:
-            ValueEventListener {
+        database.getUserProfile(Constants.userType_VENDOR).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 userProfile.value = DataResource.error(error.message)
             }

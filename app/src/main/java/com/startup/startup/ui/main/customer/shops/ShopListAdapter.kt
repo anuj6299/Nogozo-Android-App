@@ -3,6 +3,7 @@ package com.startup.startup.ui.main.customer.shops
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -13,10 +14,13 @@ import com.google.firebase.database.ValueEventListener
 import com.startup.startup.R
 import com.startup.startup.datamodels.Shop
 import com.startup.startup.network.Database
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): RecyclerView.Adapter<ShopListAdapter.ShopsViewHolder>() {
 
-    private var dataList: ArrayList<Shop> = ArrayList()
+    private var originalList: ArrayList<Shop> = ArrayList()
+    private var filteredList: ArrayList<Shop> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopsViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item_shop, parent, false)
@@ -24,52 +28,77 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
     }
 
     override fun getItemCount(): Int {
-        return dataList.size
+        return filteredList.size
     }
 
     override fun onBindViewHolder(holder: ShopsViewHolder, position: Int) {
-        holder.name.text = dataList[position].shopName
+        holder.name.text = filteredList[position].shopName
         //GET SHOP ADDRESS
-        if(dataList[position].shopAddress == null){
-            Database().getShopAddress(dataList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
+        if(filteredList[position].shopAddress == null && filteredList[position].shopId != "-1"){
+            Database().getShopAddress(filteredList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
                 }
 
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    dataList[position].shopAddress = snapshot.value as String
+                    filteredList[position].shopAddress = snapshot.value as String
                     notifyDataSetChanged()
                 }
             })
         }else{
-            holder.address.text = dataList[position].shopAddress
+            holder.address.text = filteredList[position].shopAddress
         }
         //GET SHOP STATUS
-        if(dataList[position].shopAddress == null){
-            Database().getShopStatus(dataList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
+        if(filteredList[position].shopCurrentStatus == null  && filteredList[position].shopId != "-1"){
+            Database().getShopStatus(filteredList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
                 }
 
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    dataList[position].shopCurrentStatus = snapshot.value as String
+                    filteredList[position].shopCurrentStatus = snapshot.value as String
                     notifyDataSetChanged()
                 }
             })
         }else{
-            if(dataList[position].shopCurrentStatus.equals("open", true))
+            if(filteredList[position].shopCurrentStatus.equals("open", true))
                 holder.available.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.green))
             else
                 holder.available.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.red))
-            holder.available.text = dataList[position].shopCurrentStatus
+            holder.available.text = filteredList[position].shopCurrentStatus
         }
     }
 
     fun setItemList(dataList: ArrayList<Shop>){
-        this.dataList = dataList
+        this.filteredList = dataList
+        this.originalList = dataList
         notifyDataSetChanged()
     }
 
-    fun getItemAt(position: Int): Shop{
-        return dataList[position]
+    fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults? {
+                val oReturn = FilterResults()
+                val results: ArrayList<Shop> = ArrayList()
+                if (constraint != null) {
+                    val search = constraint.trim() as String
+                    if (originalList.isNotEmpty()) {
+                        for (g in originalList) {
+                            if (g.shopName.toLowerCase(Locale.ROOT).contains(search))
+                                results.add(g)
+                        }
+                    }
+                    if(results.isEmpty()){
+                        results.add(Shop("No Shop Found", "-1", "", ""))
+                    }
+                    oReturn.values = results
+                }
+                return oReturn
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults){
+                filteredList = results.values as ArrayList<Shop>
+                notifyDataSetChanged()
+            }
+        }
     }
 
     inner class ShopsViewHolder(itemView: View, private val onShopClickInterface: OnShopClickInterface): RecyclerView.ViewHolder(itemView), View.OnClickListener{
@@ -83,15 +112,15 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         var available: TextView = itemView.findViewById(R.id.list_item_shop_available)
 
         override fun onClick(v: View?) {
-            if(dataList[adapterPosition].shopAddress != null)
-                onShopClickInterface.onShopClick(adapterPosition)
+            if(filteredList[adapterPosition].shopAddress != null || filteredList[adapterPosition].shopId != "-1")
+                onShopClickInterface.onShopClick(filteredList[adapterPosition])
             else
                 Toast.makeText(itemView.context, "Please Wait For Data To Load...", Toast.LENGTH_SHORT).show()
         }
     }
 
     interface OnShopClickInterface{
-        fun onShopClick(position: Int)
+        fun onShopClick(shop: Shop)
     }
 
 }

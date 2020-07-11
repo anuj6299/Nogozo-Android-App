@@ -1,6 +1,5 @@
 package com.startup.startup.ui.userdetails.customer
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -13,18 +12,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.startup.startup.R
 import com.startup.startup.datamodels.Area
 import com.startup.startup.datamodels.City
 import com.startup.startup.ui.BaseFragment
-import com.startup.startup.ui.ChooseOnMapActivity
 import com.startup.startup.ui.ViewModelFactory
-import com.startup.startup.ui.main.DataResource
 import com.startup.startup.ui.main.MainActivity
 import com.startup.startup.ui.userdetails.AreaListAdapter
 import com.startup.startup.ui.userdetails.CityListAdapter
 import com.startup.startup.ui.userdetails.CityResource
-import com.startup.startup.util.Constants.CHOOSE_ON_MAP_REQUEST_CODE
 import com.startup.startup.util.Constants.DIALOG_TYPE_AREA
 import com.startup.startup.util.Constants.DIALOG_TYPE_CITY
 import com.startup.startup.util.Constants.PROFILE_LEVEL_1
@@ -47,23 +44,19 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
     private lateinit var areaCard: CardView
     private lateinit var nameField: TextInputEditText
     private lateinit var phoneField: TextInputEditText
-    private lateinit var addressCard: CardView
+    private lateinit var addressWrapper: TextInputLayout
     private lateinit var confirmButton: MaterialButton
     private var selectedCity: City? = null
     private var selectedArea: Area? = null
-    private var selectedAddress: String? = null
-    private var selectedLat: Double? = null
-    private var selectedLon: Double? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         viewModel = ViewModelProvider(this, factory)[CustomerDetailsFragmentViewModel::class.java]
         addressField = view.findViewById(R.id.customer_userdetails_address_field)
-        addressField.setOnClickListener(this)
 
         areaCard = view.findViewById(R.id.customer_userdetails_area_wrapper)
         cityCard = view.findViewById(R.id.customer_userdetails_city_wrapper)
-        addressCard = view.findViewById(R.id.customer_userdetails_address_wrapper)
+        addressWrapper = view.findViewById(R.id.customer_userdetails_address_wrapper)
         nameField = view.findViewById(R.id.customer_userdetails_name_field)
         phoneField = view.findViewById(R.id.customer_userdetails_phone_field)
         citySpinner = view.findViewById(R.id.customer_userdetails_city_view)
@@ -77,10 +70,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
 
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.customer_userdetails_address_field -> {
-                val i = Intent(activity, ChooseOnMapActivity::class.java)
-                startActivityForResult(i, CHOOSE_ON_MAP_REQUEST_CODE)
-            }
             R.id.customer_userdetails_city_view -> {
                 openDialogForSelecting(DIALOG_TYPE_CITY)
             }
@@ -110,22 +99,8 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
     private fun onAreaSelected(area: Area){
         selectedArea = area
         areaSpinner.text = area.areaName
-        addressCard.visibility = View.VISIBLE
+        addressWrapper.visibility = View.VISIBLE
         checkAndShowButton()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when(requestCode){
-            CHOOSE_ON_MAP_REQUEST_CODE -> {
-                if(resultCode == Activity.RESULT_OK){
-                    selectedAddress = data!!.getStringExtra("address")
-                    addressField.text = selectedAddress
-                    selectedLat = data.getDoubleExtra("lat", 0.0)
-                    selectedLon = data.getDoubleExtra("lon", 0.0)
-                    checkAndShowButton()
-                }
-            }
-        }
     }
 
     private fun openDialogForSelecting(type: String, cityid: String = ""){
@@ -135,8 +110,10 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
         val searchView: SearchView = dialog.findViewById(R.id.dialog_searchview)
         val listView: ListView = dialog.findViewById(R.id.dialog_listview)
         val progressBar: ProgressBar = dialog.findViewById(R.id.dialog_progressbar)
+        val header: TextView = dialog.findViewById(R.id.dialog_header)
 
         if(type == DIALOG_TYPE_CITY){
+            header.text = "Choose Your City"
             viewModel.getCities().removeObservers(viewLifecycleOwner)
 
             viewModel.getCities().observe(viewLifecycleOwner, Observer {
@@ -167,7 +144,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
                             }
                         }
 
-                        println("userDetails: success ${it.data}")
                     }
                     CityResource.CityStatus.LOADING -> {
                     }
@@ -178,6 +154,7 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
                 }
             })
         }else if(type == DIALOG_TYPE_AREA){
+            header.text = "Choose Your Area"
             viewModel.getAreaOfCity(cityid).removeObservers(viewLifecycleOwner)
 
             viewModel.getAreaOfCity(cityid).observe(viewLifecycleOwner, Observer {
@@ -208,7 +185,6 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
                             }
                         }
 
-                        println("userDetails: success ${it.data}")
                     }
                     CityResource.CityStatus.LOADING -> {
                         progressBar.visibility = View.VISIBLE
@@ -226,7 +202,7 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
     }
 
     private fun checkAndShowButton(){
-        if(selectedCity != null && selectedArea != null && selectedAddress != null){
+        if(selectedCity != null && selectedArea != null){
             confirmButton.visibility = View.VISIBLE
         }else{
             confirmButton.visibility = View.INVISIBLE
@@ -237,14 +213,20 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
 
         val name = nameField.text.toString()
         val phone = phoneField.text.toString()
+        val address = addressField.text.toString()
 
-        if(name.isEmpty()){
+        if(name.isBlank()){
             Toast.makeText(context, "Please Enter Name", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if(phone.isEmpty() || Helper.isPhoneNumber(phone)){
+        if(phone.isBlank() || Helper.isPhoneNumber(phone)){
             Toast.makeText(context, "Please Enter Valid Number", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(address.isBlank()){
+            Toast.makeText(context, "Please Enter Address", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -255,7 +237,7 @@ class CustomerDetailsFragment: BaseFragment(R.layout.fragment_userdetails_custom
         map["cityid"] = selectedCity!!.cityId
         map["areaname"] = selectedArea!!.areaName
         map["areaid"] = selectedArea!!.areaId
-        map["address"] = selectedAddress!!
+        map["address"] = address
         map["profilelevel"] = PROFILE_LEVEL_1
 
         viewModel.updateUserProfile(map).addOnCompleteListener{

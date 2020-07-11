@@ -72,7 +72,9 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
     }
 
     private fun getUserProfile(){
-        viewModel.getUserProfile().observe(viewLifecycleOwner, Observer{
+        viewModel.getProfileLiveData().removeObservers(viewLifecycleOwner)
+
+        viewModel.getProfileLiveData().observe(viewLifecycleOwner, Observer{
             when(it.status){
                 DataResource.Status.SUCCESS -> {
                     setDatatoViews(it.data)
@@ -102,6 +104,7 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
                 }
             }
         })
+        viewModel.getUserProfile()
     }
 
     private fun setDatatoViews(profile: CustomerProfile){
@@ -139,8 +142,10 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
         val searchView: SearchView = dialog.findViewById(R.id.dialog_searchview)
         val listView: ListView = dialog.findViewById(R.id.dialog_listview)
         val progressBar: ProgressBar = dialog.findViewById(R.id.dialog_progressbar)
+        val header: TextView = dialog.findViewById(R.id.dialog_header)
 
         if(type == DIALOG_TYPE_CITY){
+            header.text = "Choose Your City"
             viewModel.getCities().removeObservers(viewLifecycleOwner)
 
             viewModel.getCities().observe(viewLifecycleOwner, Observer {
@@ -180,6 +185,7 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
                 }
             })
         }else if(type == DIALOG_TYPE_AREA){
+            header.text = "Choose Your Area"
             viewModel.getAreaOfCity(cityid).removeObservers(viewLifecycleOwner)
 
             viewModel.getAreaOfCity(cityid).observe(viewLifecycleOwner, Observer {
@@ -252,9 +258,9 @@ class CustomerProfileFragment: BaseFragment(R.layout.fragment_profile_customer),
 
     private fun updateUserProfile(){
 
-        val name = nameField.text.toString()
-        val phone = phoneField.text.toString()
-        val address = addressField.text.toString()
+        val name = nameField.text.toString().trim()
+        val phone = phoneField.text.toString().trim()
+        val address = addressField.text.toString().trim()
 
         newProfile!!.name = name
         newProfile!!.phone = phone

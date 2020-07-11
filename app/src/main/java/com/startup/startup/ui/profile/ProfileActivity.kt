@@ -17,12 +17,10 @@ class ProfileActivity : BaseActivity() {
         setContentView(R.layout.activity_profile)
 
         val userType = intent.getStringExtra(USER_TYPE)
-        if(userType == userType_CUSTOMER){
+        if(userType == userType_CUSTOMER)
             startFragment(CustomerProfileFragment())
-        }else if(userType == userType_VENDOR){
+        else if(userType == userType_VENDOR)
             startFragment(VendorProfileFragment())
-            Toast.makeText(this, "Coming Soon...", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun startFragment(fragment: Fragment){

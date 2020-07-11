@@ -3,6 +3,7 @@ package com.startup.startup.ui.main.customer.itemsInShop
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,11 +19,15 @@ import com.startup.startup.datamodels.Item
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolder>() {
 
-    private var dataList: ArrayList<Item> = ArrayList()
-    private var selected: HashMap<Int, Int> = HashMap() // position, quantity TODO SWITCH position -> itemId PRIORITY HIGH
+    private var originalList: ArrayList<Item> = ArrayList()
+    private var filteredList: ArrayList<Item> = ArrayList()
+    private var selectedItem: HashMap<String, Int> = HashMap() // scheme = {itemid: times}
     private var priceLiveData: MediatorLiveData<Int> = MediatorLiveData()
 
     private val itemImageBaseUrl = FirebaseStorage.getInstance().reference.child("items")
@@ -33,26 +38,25 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
     }
 
     override fun getItemCount(): Int {
-        return dataList.size
+        return filteredList.size
     }
 
     override fun onBindViewHolder(holder: ItemsViewHolder, position: Int) {
-        holder.itemName.text = dataList[position].itemName
-        holder.itemPrice.text = "₹${dataList[position].itemPrice}"
-        holder.itemDesc.text = dataList[position].itemQuantity
-        if(selected.containsKey(position)){
-            holder.itemQuantity.text = "${selected[position]}"
+        holder.itemName.text = filteredList[position].itemName
+        holder.itemPrice.text = "₹${filteredList[position].itemPrice}"
+        holder.itemDesc.text = filteredList[position].itemQuantity
+        if(selectedItem.containsKey(filteredList[position].itemId)){
+            holder.itemQuantity.text = "${selectedItem[filteredList[position].itemId!!]}"
         }else{
             holder.itemQuantity.text = "0"
         }
 
         Glide.with(holder.itemView.context)
-            .load(itemImageBaseUrl.child(dataList[position].itemId!!))
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .load(itemImageBaseUrl.child(filteredList[position].itemId!!))
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .into(holder.itemImage)
 
-        println("$position ${dataList[position].isAvailable}")
-        if(!dataList[position].isAvailable!!){
+        if(!filteredList[position].isAvailable!!){
             holder.itemName.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
             holder.itemPrice.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
             holder.itemDesc.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
@@ -68,7 +72,8 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
     }
 
     fun setData(dataList: ArrayList<Item>){
-        this.dataList = dataList
+        this.filteredList = dataList
+        this.originalList = dataList
         notifyDataSetChanged()
     }
 
@@ -79,23 +84,64 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
     fun calculateTotal(){
         CoroutineScope(Dispatchers.Default).launch{
             var price = 0
-            for((key, value) in selected){
-                price += dataList[key].itemPrice.toInt()*value
+            for((key, value) in selectedItem){
+                val posi = idToPosition(key)
+                if(posi != -1)
+                    price += originalList[posi].itemPrice.toInt()*value
             }
+            println(price)
             priceLiveData.postValue(price)
         }
     }
 
-    fun getSelectedItem(): HashMap<String, Any>{
+    suspend fun idToPosition(itemId: String): Int{
+        for (i in 0 until originalList.size) {
+            if (originalList[i].itemId == itemId) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    suspend fun getSelectedItem(): HashMap<String, Any>{
         val map: HashMap<String, Any> = HashMap()
-        for((key, value) in selected){
+        for((key, value) in selectedItem){
             val itemMap: HashMap<String, String> = HashMap()
-            itemMap["itemname"] = dataList[key].itemName!!
-            itemMap["quantity"] = dataList[key].itemQuantity!!
+            val posi = idToPosition(key)
+            itemMap["itemname"] = originalList[posi].itemName!!
+            itemMap["quantity"] = originalList[posi].itemQuantity!!
             itemMap["times"] = value.toString()
-            map[dataList[key].itemId!!] = itemMap
+            map[originalList[posi].itemId!!] = itemMap
         }
         return map
+    }
+
+    fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults? {
+                val oReturn = FilterResults()
+                val results: ArrayList<Item> = ArrayList()
+                if (constraint != null) {
+                    val search = constraint.trim() as String
+                    if (originalList.isNotEmpty()) {
+                        for (g in originalList) {
+                            if (g.itemName!!.toLowerCase(Locale.ROOT).contains(search))
+                                results.add(g)
+                        }
+                    }
+                    if(results.isEmpty()){
+                        results.add(Item("-1","No item found", isAvailable = false))
+                    }
+                    oReturn.values = results
+                }
+                return oReturn
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults){
+                filteredList = results.values as ArrayList<Item>
+                notifyDataSetChanged()
+            }
+        }
     }
 
     inner class ItemsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener{
@@ -114,23 +160,24 @@ class ItemsInShopAdapter: RecyclerView.Adapter<ItemsInShopAdapter.ItemsViewHolde
         }
 
         override fun onClick(v: View?) {
+            val itemId = filteredList[adapterPosition].itemId!!
             when(v!!.id) {
                 R.id.list_item_iteminshop_add -> {
-                    if(selected.containsKey(adapterPosition)){
-                        selected[adapterPosition] = selected[adapterPosition]!! + 1
+                    if(selectedItem.containsKey(itemId)){
+                        selectedItem[itemId] = selectedItem[itemId]!! + 1
                     }else{
-                        selected[adapterPosition] = 1
+                        selectedItem[itemId] = 1
                     }
                     notifyDataSetChanged()
                     calculateTotal()
                 }
                 R.id.list_item_iteminshop_minus -> {
-                    if(selected.containsKey(adapterPosition)){
-                        val a = selected[adapterPosition]!! - 1
+                    if(selectedItem.containsKey(itemId)){
+                        val a = selectedItem[itemId]!! - 1
                         if(a == 0){
-                            selected.remove(adapterPosition)
+                            selectedItem.remove(itemId)
                         }else{
-                            selected[adapterPosition] = a
+                            selectedItem[itemId] = a
                         }
                         notifyDataSetChanged()
                         calculateTotal()

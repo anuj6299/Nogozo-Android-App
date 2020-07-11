@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,14 +14,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.startup.startup.R
 import com.startup.startup.SessionManager
 import com.startup.startup.datamodels.Services
+import com.startup.startup.datamodels.Shop
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
 import com.startup.startup.ui.main.Communicator
 import com.startup.startup.ui.main.DataResource
+import com.startup.startup.util.Constants.AREA_NAME
 import com.startup.startup.util.Constants.SERVICE_ID
 import com.startup.startup.util.Constants.SERVICE_NAME
 import com.startup.startup.util.VerticalSpacingItemDecoration
-import kotlinx.android.synthetic.main.fragment_main_shops.*
 import javax.inject.Inject
 
 class ShopListFragment(
@@ -38,6 +40,7 @@ class ShopListFragment(
     private lateinit var progressBar: ProgressBar
     private lateinit var shopNameHeader: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var searchView: SearchView
 
     private lateinit var adapter: ShopListAdapter
 
@@ -51,6 +54,7 @@ class ShopListFragment(
         progressBar = view.findViewById(R.id.fragment_shops_progressBar)
         shopNameHeader = view.findViewById(R.id.shop_header_name)
         swipeRefresh = view.findViewById(R.id.fragment_shops_swipeRefresh)
+        searchView = view.findViewById(R.id.fragment_main_shop_searchview)
 
         initRecycler()
 
@@ -61,8 +65,22 @@ class ShopListFragment(
             viewModel.getShopsList(service?.serviceId!!)
         }
 
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText != null){
+                    if(newText.trim().isNotBlank())
+                        adapter.getFilter().filter(newText)
+                }
+                return true
+            }
+        })
+
         getShops(service?.serviceId!!)
-        shop_header_name.text = "${service!!.serviceName} Shops in ${sessionManager.getAreaName()}"
+        shopNameHeader.text = "${service!!.serviceName} Shops in ${sessionManager.currentSessionData[AREA_NAME]}"
 
     }
 
@@ -94,7 +112,9 @@ class ShopListFragment(
         viewModel.getShopsList(serviceId)
     }
 
-    override fun onShopClick(position: Int) {
-        communicator.onShopSelected(adapter.getItemAt(position).shopId, adapter.getItemAt(position).shopName, adapter.getItemAt(position).shopAddress)
+    override fun onShopClick(shop: Shop) {
+        if(shop.shopId == "-1")
+            return
+        communicator.onShopSelected(shop.shopId, shop.shopName, shop.shopAddress)
     }
 }

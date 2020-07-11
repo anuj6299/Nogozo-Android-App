@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class OrderAdapter(
-    private val showPackedButton: Boolean = false
+    private val showPackedButton: Boolean = false,
+    private val comparator: Comparator<Order> = OrderByDateTime()
 ): RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
     private var orderList: ArrayList<Order> = ArrayList()
@@ -37,6 +38,9 @@ class OrderAdapter(
         holder.shopName.text = orderList[position].shopname
         holder.dateTime.text = "${orderList[position].date} on ${orderList[position].time}"
         holder.price.text = "₹${orderList[position].price}"
+        holder.instruction.text = orderList[position].shopinstruction
+        if(orderList[position].shopinstruction.isNullOrBlank())
+            holder.instruction.visibility = View.GONE
 
         //items stored in map under each order
         var items = ""
@@ -83,7 +87,7 @@ class OrderAdapter(
     fun setList(dataList: ArrayList<Order>){
         orderList = dataList
         CoroutineScope(Dispatchers.Default).launch{
-            orderList.sortWith(OrderByDateTime())
+            orderList.sortWith(comparator)
             withContext(Main){
                 notifyDataSetChanged()
             }
@@ -96,6 +100,7 @@ class OrderAdapter(
         val price: TextView = itemView.findViewById(R.id.list_item_current_order_price)
         val items: TextView = itemView.findViewById(R.id.list_item_current_order_items)
         val status: TextView = itemView.findViewById(R.id.list_item_current_order_status)
+        val instruction: TextView = itemView.findViewById(R.id.list_item_current_order_instruction)
         val markedPacked: TextView = itemView.findViewById(R.id.list_item_current_order_markpacked_button)
         init {
             markedPacked.setOnClickListener(this)

@@ -77,7 +77,7 @@ class CustomerProfileFragmentViewModel
         return areas
     }
 
-    fun getUserProfile(): LiveData<DataResource<CustomerProfile>>{
+    fun getUserProfile(){
         userProfile.value = DataResource.loading()
         database.getUserProfile(userType_CUSTOMER).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
@@ -88,10 +88,13 @@ class CustomerProfileFragmentViewModel
                     val profile = snapshot.getValue<CustomerProfile>()
                     userProfile.value = DataResource.success(profile!!)
                 }else{
-                    userProfile.value = DataResource.error("SomethingWentWrong")
+                    userProfile.value = DataResource.error("Something Went Wrong")
                 }
             }
         })
+    }
+
+    fun getProfileLiveData(): LiveData<DataResource<CustomerProfile>>{
         return userProfile
     }
 

@@ -35,6 +35,15 @@ class SessionManager
     private val preferences: SharedPreferences,
     private val editPreferences: SharedPreferences.Editor) {
 
+    val currentSessionData: HashMap<String, String> by lazy {
+        val data:HashMap<String, String> = HashMap()
+        data[CITY_ID] = getCityId()
+        data[CITY_NAME] = getCityName()
+        data[AREA_ID] = getAreaId()
+        data[AREA_NAME] = getAreaName()
+        return@lazy data
+    }
+
     fun getCurrentUser(): AuthResource{
         val auth = FirebaseAuth.getInstance()
         if(auth.currentUser != null)
@@ -46,13 +55,21 @@ class SessionManager
         return FirebaseAuth.getInstance().currentUser!!.uid
     }
 
-     fun logout(){
+    fun logout(){
         editPreferences.clear().apply()
         FirebaseAuth.getInstance().signOut()
     }
 
     fun getUserType(): String{
         return preferences.getString(USER_TYPE, "-1")!!
+    }
+
+    fun getCityId(): String{
+        return preferences.getString(CITY_ID,"-1")!!
+    }
+
+    fun getCityName(): String{
+        return preferences.getString(CITY_NAME, "")!!
     }
 
     fun getAreaId(): String{
@@ -100,6 +117,10 @@ class SessionManager
             editPreferences.putString(NAME, profile.name).apply()
             editPreferences.putString(ADDRESS, profile.address).apply()
             editPreferences.putString(PHONE, profile.phone).apply()
+            currentSessionData[AREA_NAME] = profile.areaname!!
+            currentSessionData[AREA_ID] = profile.areaid!!
+            currentSessionData[CITY_NAME] = profile.cityname!!
+            currentSessionData[CITY_ID] = profile.cityid!!
         }
     }
 
@@ -113,6 +134,11 @@ class SessionManager
             editPreferences.putString(NAME, map["name"] as String).apply()
             editPreferences.putString(ADDRESS, map["address"] as String).apply()
             editPreferences.putString(PHONE, map["phone"] as String).apply()
+
+            currentSessionData[AREA_NAME] = map["areaname"] as String
+            currentSessionData[AREA_ID] = map["areaid"] as String
+            currentSessionData[CITY_NAME] = map["cityname"] as String
+            currentSessionData[CITY_ID] = map["cityid"] as String
         }
     }
 

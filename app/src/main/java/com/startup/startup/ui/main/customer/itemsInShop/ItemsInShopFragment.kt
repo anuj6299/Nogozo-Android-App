@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +44,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
     private lateinit var proceedButton: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var itemsinshop_header: TextView
+    private lateinit var searchView: SearchView
 
     private lateinit var adapter: ItemsInShopAdapter
     private var shop: Shop? = null
@@ -52,6 +54,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
 
         viewModel = ViewModelProvider(this, factory)[ItemsInShopFragmentViewModel::class.java]
 
+        searchView = view.findViewById(R.id.fragment_main_itemsinshop_searchview)
         recyclerView = view.findViewById(R.id.fragment_main_itemsinshop_recyclerview)
         progressBar = view.findViewById(R.id.fragment_iteminshops_progressBar)
         proceedButton = view.findViewById(R.id.fragment_main_iteminshop_proceed)
@@ -66,6 +69,16 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
         getItems(shop!!.shopId)
         itemsinshop_header.text = shop!!.shopName
 
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.getFilter().filter(newText)
+                return true
+            }
+        })
         subscribeObserver()
     }
 
