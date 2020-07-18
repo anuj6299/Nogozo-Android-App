@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.R
 import com.startup.startup.datamodels.Services
@@ -28,10 +27,10 @@ class ServicesListAdapter( private val onServiceClickInterface: OnServicesClickI
     }
 
     override fun onBindViewHolder(holder: ServicesViewHolder, position: Int) {
-        holder.textView.text = dataList[position].serviceName
+        holder.textView.text = dataList[position].servicename
         Glide.with(holder.itemView.context)
-            .load(storage.child(dataList[position].serviceId))
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .load(storage.child(dataList[position].serviceId!!))
+            .diskCacheStrategy(DiskCacheStrategy.DATA)
             .into(holder.imageView)
     }
 

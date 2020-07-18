@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.startup.startup.R
 import com.startup.startup.datamodels.Order
 import com.startup.startup.network.Database
+import com.startup.startup.util.Constants.userType_CUSTOMER
 import com.startup.startup.util.OrderByDateTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,8 @@ import kotlinx.coroutines.withContext
 
 class OrderAdapter(
     private val showPackedButton: Boolean = false,
-    private val comparator: Comparator<Order> = OrderByDateTime()
+    private val comparator: Comparator<Order> = OrderByDateTime(),
+    private val userType: String = userType_CUSTOMER
 ): RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
     private var orderList: ArrayList<Order> = ArrayList()
@@ -37,8 +39,14 @@ class OrderAdapter(
             holder.shopName.visibility = View.GONE
         holder.shopName.text = orderList[position].shopname
         holder.dateTime.text = "${orderList[position].date} on ${orderList[position].time}"
-        holder.price.text = "₹${orderList[position].price}"
+
+        if(userType == userType_CUSTOMER)
+            holder.price.text = "₹${orderList[position].price}"
+        else
+            holder.price.text = "₹${orderList[position].itemprice}"
+
         holder.instruction.text = orderList[position].shopinstruction
+
         if(orderList[position].shopinstruction.isNullOrBlank())
             holder.instruction.visibility = View.GONE
 

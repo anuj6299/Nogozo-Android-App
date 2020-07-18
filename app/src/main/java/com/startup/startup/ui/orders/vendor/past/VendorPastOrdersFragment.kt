@@ -16,6 +16,7 @@ import com.startup.startup.ui.ViewModelFactory
 import com.startup.startup.ui.main.DataResource
 import com.startup.startup.ui.main.vendor.orders.OrderAdapter
 import com.startup.startup.ui.orders.customer.past.CustomerPastOrdersFragmentViewModel
+import com.startup.startup.util.Constants.userType_VENDOR
 import com.startup.startup.util.VerticalSpacingItemDecoration
 import javax.inject.Inject
 
@@ -54,7 +55,7 @@ class VendorPastOrdersFragment: BaseFragment(R.layout.fragment_orders) {
     private fun initRecycler(){
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.addItemDecoration(VerticalSpacingItemDecoration(16))
-        adapter = OrderAdapter()
+        adapter = OrderAdapter(userType = userType_VENDOR)
         recyclerView.adapter = adapter
     }
 

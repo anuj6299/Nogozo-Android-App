@@ -7,15 +7,13 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.startup.startup.network.Database
-import com.startup.startup.ui.main.MainActivity
 import com.startup.startup.ui.splash.SplashActivity
-import com.startup.startup.util.Constants.USER_TYPE
+import com.startup.startup.util.Constants.TOKEN
 import javax.inject.Inject
 
 
@@ -37,7 +35,7 @@ class NotificationService: FirebaseMessagingService() {
             uploadToken(token)
         }
         val sp = getSharedPreferences("notification", Context.MODE_PRIVATE)
-        sp.edit().putString("token", token).apply()
+        sp.edit().putString(TOKEN, token).apply()
     }
 
     private fun uploadToken(token: String){

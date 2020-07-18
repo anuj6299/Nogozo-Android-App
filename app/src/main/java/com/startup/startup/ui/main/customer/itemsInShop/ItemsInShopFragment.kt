@@ -19,6 +19,7 @@ import com.startup.startup.ui.ViewModelFactory
 import com.startup.startup.ui.main.Communicator
 import com.startup.startup.ui.main.DataResource
 import com.startup.startup.ui.payment.ConfirmActivity
+import com.startup.startup.util.Constants.AREA_ID
 import com.startup.startup.util.Constants.SHOP_ADDRESS
 import com.startup.startup.util.Constants.SHOP_ID
 import com.startup.startup.util.Constants.SHOP_NAME
@@ -33,7 +34,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(R.layout.fragment_main_itemsinshop), View.OnClickListener {
+class ItemsInShopFragment(
+    private val communicator: Communicator
+): BaseFragment(R.layout.fragment_main_itemsinshop), View.OnClickListener {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -55,6 +58,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
         viewModel = ViewModelProvider(this, factory)[ItemsInShopFragmentViewModel::class.java]
 
         searchView = view.findViewById(R.id.fragment_main_itemsinshop_searchview)
+        searchView.setIconifiedByDefault(false)
         recyclerView = view.findViewById(R.id.fragment_main_itemsinshop_recyclerview)
         progressBar = view.findViewById(R.id.fragment_iteminshops_progressBar)
         proceedButton = view.findViewById(R.id.fragment_main_iteminshop_proceed)
@@ -63,7 +67,7 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
 
         initRecycler()
 
-        shop = Shop(arguments!!.getString(SHOP_NAME,""), arguments!!.getString(SHOP_ID,"-1"),"",arguments!!.getString(SHOP_STATUS,"-1"))
+        shop = Shop(arguments!!.getString(SHOP_NAME,""), arguments!!.getString(SHOP_ID,"-1"),"",arguments!!.getString(SHOP_STATUS,"-1"), arguments!!.getString(AREA_ID,"-1"))
         shop!!.shopAddress = arguments!!.getString(SHOP_ADDRESS, "")
 
         getItems(shop!!.shopId)
@@ -133,8 +137,10 @@ class ItemsInShopFragment(private val communicator: Communicator): BaseFragment(
                         val orderData: HashMap<String, Any> = HashMap()
                         orderData["shopid"] = shop!!.shopId
                         orderData["shopname"] = shop!!.shopName
+                        orderData["shopareaid"] = shop!!.shopAreaId!!
                         orderData["shopaddress"] = shop!!.shopAddress!!
                         orderData["price"] = price
+                        orderData["itemprice"] = price
                         orderData["status"] = "0"
                         orderData["items"] = map
                         i.putExtra("order", orderData)

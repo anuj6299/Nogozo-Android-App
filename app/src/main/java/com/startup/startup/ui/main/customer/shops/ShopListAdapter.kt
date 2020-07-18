@@ -14,6 +14,9 @@ import com.google.firebase.database.ValueEventListener
 import com.startup.startup.R
 import com.startup.startup.datamodels.Shop
 import com.startup.startup.network.Database
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -47,6 +50,9 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         }else{
             holder.address.text = filteredList[position].shopAddress
         }
+        //GET AREAID
+
+
         //GET SHOP STATUS
         if(filteredList[position].shopCurrentStatus == null  && filteredList[position].shopId != "-1"){
             Database().getShopStatus(filteredList[position].shopId).addListenerForSingleValueEvent(object: ValueEventListener{
@@ -71,6 +77,57 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         this.filteredList = dataList
         this.originalList = dataList
         notifyDataSetChanged()
+        // SHOP ADDRESS
+        val database = Database()
+        CoroutineScope(Default).launch {
+            for (i in 0 until originalList.size) {
+                if (originalList[i].shopAddress == null && originalList[i].shopId != "-1") {
+                    database.getShopAddress(originalList[i].shopId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                originalList[i].shopAddress = snapshot.value as String
+                                notifyDataSetChanged()
+                            }
+                        })
+                }
+                //areaid
+                if (originalList[i].shopAreaId == "-1" && originalList[i].shopId != "-1") {
+                    database.getShopAreaId(originalList[i].shopId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                originalList[i].shopAreaId = snapshot.value as String
+                                notifyDataSetChanged()
+                            }
+                        })
+                }
+
+                //shop status
+                if (originalList[i].shopCurrentStatus == null && originalList[i].shopId != "-1") {
+                    database.getShopStatus(originalList[i].shopId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                originalList[i].shopCurrentStatus = snapshot.value as String
+                                notifyDataSetChanged()
+                            }
+                        })
+                }
+            }
+        }
+    }
+
+    fun removeAllItem(){
+        this.filteredList.clear()
+        this.originalList.clear()
+        notifyDataSetChanged()
     }
 
     fun getFilter(): Filter {
@@ -87,7 +144,7 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
                         }
                     }
                     if(results.isEmpty()){
-                        results.add(Shop("No Shop Found", "-1", "", ""))
+                        results.add(Shop("No Shop Found", "-1", "", "", "-1"))
                     }
                     oReturn.values = results
                 }
@@ -112,7 +169,9 @@ class ShopListAdapter(private val onShopClickInterface: OnShopClickInterface): R
         var available: TextView = itemView.findViewById(R.id.list_item_shop_available)
 
         override fun onClick(v: View?) {
-            if(filteredList[adapterPosition].shopAddress != null || filteredList[adapterPosition].shopId != "-1")
+            if(filteredList[adapterPosition].shopId == "-1")
+                return
+            if(filteredList[adapterPosition].shopAddress != null || filteredList[adapterPosition].shopId != "-1" || filteredList[adapterPosition].shopAreaId != "-1")
                 onShopClickInterface.onShopClick(filteredList[adapterPosition])
             else
                 Toast.makeText(itemView.context, "Please Wait For Data To Load...", Toast.LENGTH_SHORT).show()

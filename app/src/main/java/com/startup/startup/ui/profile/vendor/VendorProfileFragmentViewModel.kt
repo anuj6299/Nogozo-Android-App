@@ -36,7 +36,6 @@ class VendorProfileFragmentViewModel
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                println(snapshot)
                 if(snapshot.value != null){
                     val profile = snapshot.getValue<VendorProfile>()
                     userProfile.value = DataResource.success(profile!!)

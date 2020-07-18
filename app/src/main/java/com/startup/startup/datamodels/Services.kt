@@ -1,17 +1,13 @@
 package com.startup.startup.datamodels
 
-class Services {
-    lateinit var serviceName: String
+import com.google.firebase.database.IgnoreExtraProperties
+import java.io.Serializable
 
-    lateinit var serviceId: String
+@IgnoreExtraProperties
+data class Services(
+    var serviceId: String? = "-1",
+    var servicename: String? = "",
+    var priority: Int? = 100
+): Serializable {
 
-    var imageUrl: String? = null
-
-    constructor(serviceId: String, serviceName: String, imageUrl: String?){
-        this.serviceId = serviceId
-        this.serviceName = serviceName
-        this.imageUrl = imageUrl
-    }
-
-    constructor()
 }

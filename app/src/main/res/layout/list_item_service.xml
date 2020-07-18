@@ -12,23 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-<!--        <de.hdodenhof.circleimageview.CircleImageView-->
-<!--            android:id="@+id/list_item_service_imageview"-->
-<!--            android:layout_width="48dp"-->
-<!--            android:layout_height="48dp"-->
-<!--            android:layout_margin="8dp"/>-->
-
         <ImageView
             android:id="@+id/list_item_service_imageview"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:contentDescription="service image" />
+            android:contentDescription="service image"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
 
         <TextView
             android:id="@+id/list_item_service_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="#000000"
             android:layout_margin="8dp"
             android:layout_gravity="center"/>

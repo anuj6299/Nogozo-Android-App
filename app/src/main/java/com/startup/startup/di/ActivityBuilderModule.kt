@@ -20,6 +20,9 @@ import com.startup.startup.di.profile.ProfileFragmentModule
 import com.startup.startup.di.profile.ProfileScope
 import com.startup.startup.di.profile.ProfileViewModelModule
 import com.startup.startup.di.splash.SplashViewModelModule
+import com.startup.startup.di.stats.StatsFragmentModule
+import com.startup.startup.di.stats.StatsFragmentViewModelModule
+import com.startup.startup.di.stats.StatsScope
 import com.startup.startup.di.userdetails.UserDetailsFragmentModule
 import com.startup.startup.di.userdetails.UserDetailsScope
 import com.startup.startup.di.userdetails.UserDetailsViewModelModule
@@ -32,6 +35,7 @@ import com.startup.startup.ui.payment.ConfirmActivity
 import com.startup.startup.ui.profile.ProfileActivity
 import com.startup.startup.ui.userdetails.UserDetailsActivity
 import com.startup.startup.ui.splash.SplashActivity
+import com.startup.startup.ui.stats.StatsActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -111,4 +115,13 @@ abstract class ActivityBuilderModule {
         ]
     )
     abstract fun contributeVendorInventoryActivity(): VendorInventoryActivity
+
+    @StatsScope
+    @ContributesAndroidInjector(
+        modules = [
+            StatsFragmentModule::class,
+            StatsFragmentViewModelModule::class
+        ]
+    )
+    abstract fun contributeStatsActivity(): StatsActivity
 }

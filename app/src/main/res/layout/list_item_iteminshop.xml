@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name of the Item"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/black"
             android:layout_margin="8dp"
             app:layout_constraintStart_toEndOf="@id/list_item_iteminshop_image"
@@ -58,7 +58,6 @@
             android:layout_margin="8dp"
             android:background="@drawable/curved_stroke"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
             <ImageButton
                 android:id="@+id/list_item_iteminshop_minus"

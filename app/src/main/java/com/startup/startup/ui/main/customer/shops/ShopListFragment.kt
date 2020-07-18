@@ -38,7 +38,6 @@ class ShopListFragment(
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
-    private lateinit var shopNameHeader: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var searchView: SearchView
 
@@ -52,13 +51,13 @@ class ShopListFragment(
 
         recyclerView = view.findViewById(R.id.fragment_main_shop_recyclerview)
         progressBar = view.findViewById(R.id.fragment_shops_progressBar)
-        shopNameHeader = view.findViewById(R.id.shop_header_name)
         swipeRefresh = view.findViewById(R.id.fragment_shops_swipeRefresh)
         searchView = view.findViewById(R.id.fragment_main_shop_searchview)
+        searchView.setIconifiedByDefault(false)
 
         initRecycler()
 
-        service = Services(arguments!!.getString(SERVICE_ID,"-1"), arguments!!.getString(SERVICE_NAME,"-1"), "")
+        service = Services(arguments!!.getString(SERVICE_ID,"-1"), arguments!!.getString(SERVICE_NAME,"-1"))
 
         swipeRefresh.setOnRefreshListener{
             swipeRefresh.isRefreshing = false
@@ -71,16 +70,12 @@ class ShopListFragment(
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if(newText != null){
-                    if(newText.trim().isNotBlank())
-                        adapter.getFilter().filter(newText)
-                }
+                adapter.getFilter().filter(newText)
                 return true
             }
         })
 
         getShops(service?.serviceId!!)
-        shopNameHeader.text = "${service!!.serviceName} Shops in ${sessionManager.currentSessionData[AREA_NAME]}"
 
     }
 
@@ -115,6 +110,6 @@ class ShopListFragment(
     override fun onShopClick(shop: Shop) {
         if(shop.shopId == "-1")
             return
-        communicator.onShopSelected(shop.shopId, shop.shopName, shop.shopAddress)
+        communicator.onShopSelected(shop.shopId, shop.shopName, shop.shopAddress, shop.shopAreaId!!)
     }
 }

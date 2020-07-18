@@ -19,13 +19,16 @@ import com.startup.startup.SessionManager
 import com.startup.startup.ui.BaseActivity
 import com.startup.startup.ui.inventory.VendorInventoryActivity
 import com.startup.startup.ui.main.customer.itemsInShop.ItemsInShopFragment
+import com.startup.startup.ui.main.customer.search.GlobalSearchFragment
 import com.startup.startup.ui.main.customer.services.CustomerServicesFragment
 import com.startup.startup.ui.main.customer.shops.ShopListFragment
 import com.startup.startup.ui.main.vendor.orders.current.VendorCurrentOrdersFragment
 import com.startup.startup.ui.orders.OrdersActivity
 import com.startup.startup.ui.profile.ProfileActivity
 import com.startup.startup.ui.splash.SplashActivity
+import com.startup.startup.ui.stats.StatsActivity
 import com.startup.startup.util.Constants
+import com.startup.startup.util.Constants.AREA_ID
 import com.startup.startup.util.Constants.SERVICE_ID
 import com.startup.startup.util.Constants.SERVICE_NAME
 import com.startup.startup.util.Constants.SHOP_ADDRESS
@@ -144,7 +147,9 @@ class MainActivity : BaseActivity(), Communicator, View.OnClickListener {
                             startActivity(i)
                         }
                         2-> {
-                            Toast.makeText(this@MainActivity, "Coming Soon...", Toast.LENGTH_SHORT).show()
+                            val i = Intent(this@MainActivity, StatsActivity::class.java)
+                            i.putExtra(USER_TYPE, userType_VENDOR)
+                            startActivity(i)
                         }
                         3 -> {
                             val i = Intent(this@MainActivity, ProfileActivity::class.java)
@@ -190,15 +195,20 @@ class MainActivity : BaseActivity(), Communicator, View.OnClickListener {
         startFragment(f)
     }
 
-    override fun onShopSelected(shopId: String, shopName: String, shopAddress: String?) {
+    override fun onShopSelected(shopId: String, shopName: String, shopAddress: String?, shopAreaId: String) {
         //start fragment to show item list with specefic shopid
         val f = ItemsInShopFragment(this)
         val b = Bundle()
         b.putString(SHOP_ID, shopId)
         b.putString(SHOP_NAME, shopName)
         b.putString(SHOP_ADDRESS, shopAddress)
+        b.putString(AREA_ID, shopAreaId)
         f.arguments = b
         startFragment(f)
+    }
+
+    override fun onGlobalSearch(){
+        startFragment(GlobalSearchFragment(this))
     }
 
     override fun onClick(v: View?) {

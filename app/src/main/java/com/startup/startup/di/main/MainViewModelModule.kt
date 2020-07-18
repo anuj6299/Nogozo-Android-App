@@ -3,6 +3,7 @@ package com.startup.startup.di.main
 import androidx.lifecycle.ViewModel
 import com.startup.startup.di.ViewModelKey
 import com.startup.startup.ui.main.customer.itemsInShop.ItemsInShopFragmentViewModel
+import com.startup.startup.ui.main.customer.search.GlobalSearchViewModel
 import com.startup.startup.ui.main.customer.shops.ShopListFragmentViewModel
 import com.startup.startup.ui.main.customer.services.CustomerServiceFragmentViewModel
 import com.startup.startup.ui.main.vendor.orders.current.VendorCurrentOrdersFragmentViewModel
@@ -36,4 +37,10 @@ abstract class MainViewModelModule{
     @IntoMap
     @ViewModelKey(VendorCurrentOrdersFragmentViewModel::class)
     abstract fun bindCurrentOrderVendorViewModel(viewModel: VendorCurrentOrdersFragmentViewModel): ViewModel
+
+    @MainScope
+    @Binds
+    @IntoMap
+    @ViewModelKey(GlobalSearchViewModel::class)
+    abstract fun bindGlobalSearchViewModel(viewModel: GlobalSearchViewModel): ViewModel
 }

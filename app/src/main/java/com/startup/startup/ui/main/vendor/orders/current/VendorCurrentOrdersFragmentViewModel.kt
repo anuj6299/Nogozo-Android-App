@@ -3,7 +3,6 @@ package com.startup.startup.ui.main.vendor.orders.current
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -12,8 +11,6 @@ import com.startup.startup.SessionManager
 import com.startup.startup.datamodels.Order
 import com.startup.startup.network.Database
 import com.startup.startup.ui.main.DataResource
-import com.startup.startup.ui.main.vendor.orders.OrderAdapter
-import com.startup.startup.util.Constants.userType_VENDOR
 import javax.inject.Inject
 
 class VendorCurrentOrdersFragmentViewModel
@@ -92,7 +89,16 @@ class VendorCurrentOrdersFragmentViewModel
         return shopStatus
     }
 
-    fun changeShopStatus(status: String): Task<Void> {
-        return database.changeShopStatus(sessionManager.getUserId(), status, userType_VENDOR)
+    fun changeShopStatus() {
+        var status = shopStatus.value
+        if(status == null)
+            status = "OPEN"
+        else{
+            if(status == "OPEN")
+                status = "CLOSED"
+            else if(status == "CLOSED")
+                status = "OPEN"
+        }
+        database.changeShopStatus(sessionManager.getUserId(), status)
     }
 }

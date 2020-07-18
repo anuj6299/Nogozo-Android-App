@@ -26,7 +26,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -45,8 +47,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
 
     //Dagger2
-    implementation 'com.google.dagger:dagger:2.27'
-    kapt 'com.google.dagger:dagger-compiler:2.27'
+    implementation 'com.google.dagger:dagger:2.28'
+    kapt 'com.google.dagger:dagger-compiler:2.28'
     implementation 'com.google.dagger:dagger-android:2.27'
     implementation 'com.google.dagger:dagger-android-support:2.27' // if you use the support libraries
     kapt 'com.google.dagger:dagger-android-processor:2.27'
@@ -90,6 +92,9 @@ dependencies {
 
     //FIREBASE MESSAGING
     implementation 'com.google.firebase:firebase-messaging:20.2.1'
+
+    //FIREBASE FUNCTION
+    implementation 'com.google.firebase:firebase-functions:19.0.2'
 
     //ImageCropper
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'

@@ -44,6 +44,14 @@ class DataResource<T> {
                 "loading"
             )
         }
+
+        fun <T> emptyResult(): DataResource<T>{
+            return DataResource(
+                Status.NO_RESULT,
+                null as T,
+                "No Result Found"
+            )
+        }
     }
-    enum class Status{SUCCESS, ERROR, LOADING}
+    enum class Status{SUCCESS, ERROR, LOADING, NO_RESULT}
 }

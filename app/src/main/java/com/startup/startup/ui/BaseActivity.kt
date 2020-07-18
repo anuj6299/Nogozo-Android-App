@@ -1,6 +1,8 @@
 package com.startup.startup.ui
 
+import android.app.Activity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -27,4 +29,12 @@ abstract class BaseActivity: DaggerAppCompatActivity(){
         progressBar.visibility = if(visibility) View.VISIBLE else View.GONE
     }
 
+    private fun hideKeyboard(){
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var v: View? = currentFocus
+        if(v == null){
+            v = View(this)
+        }
+        imm.hideSoftInputFromWindow(v.windowToken, 0)
+    }
 }

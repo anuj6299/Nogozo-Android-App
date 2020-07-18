@@ -49,6 +49,7 @@ class CustomerServicesFragment(private val communicator: Communicator): BaseFrag
 
     private fun initRecyceler(){
         recyclerView.layoutManager = GridLayoutManager(context,2)
+//        recyclerView.layoutManager = StaggeredGridLayoutManager(2, VERTICAL)
         recyclerView.addItemDecoration(VerticalSpacingItemDecoration(16))
         adapter = ServicesListAdapter(this)
         recyclerView.adapter = adapter
@@ -77,14 +78,13 @@ class CustomerServicesFragment(private val communicator: Communicator): BaseFrag
     }
 
     override fun onServiceClick(position: Int) {
-        communicator.onServiceSelected(adapter.getItemAt(position).serviceId, adapter.getItemAt(position).serviceName)
+        communicator.onServiceSelected(adapter.getItemAt(position).serviceId!!, adapter.getItemAt(position).servicename!!)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.fragment_service_search_wrapper -> {
-                //TODO NEW FRAGMENT FOR SEARCH
-                Toast.makeText(context, "Search Click", Toast.LENGTH_SHORT).show()
+                communicator.onGlobalSearch()
             }
         }
     }

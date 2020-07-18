@@ -4,9 +4,13 @@ import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.HttpsCallableReference
+import com.google.firebase.functions.HttpsCallableResult
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.startup.startup.datamodels.CustomerProfile
+import com.startup.startup.util.Constants.userType_VENDOR
 
 class Database {
 
@@ -54,14 +58,15 @@ class Database {
             .child("arealist").child(cityId)
     }
 
-    fun getServices(): DatabaseReference{
+    fun getServices(): Query{
         return FirebaseDatabase.getInstance().reference
-            .child("service")
+            .child("service").orderByChild("priority")
     }
 
-    fun getShops(serviceId: String, areaId: String): DatabaseReference{
+    fun getShops(serviceId: String, cityId: String): Query{
         return FirebaseDatabase.getInstance().reference
-            .child("shops").child(serviceId).child(areaId)
+            .child("shops").child(cityId)
+            .orderByChild("serviceid/$serviceId").equalTo(true)
     }
 
     fun getItems(shopId: String): DatabaseReference{
@@ -86,10 +91,28 @@ class Database {
             .child(shopid).child("address")
     }
 
+    fun getShopAreaId(shopId: String): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child("shop")
+            .child(shopId).child("profile").child("areaid")
+    }
+
     fun getShopStatus(shopId: String): DatabaseReference{
         return FirebaseDatabase.getInstance().reference
             .child("users").child("shop")
             .child(shopId).child("status")
+    }
+
+    fun getFare(price: String, cityId: String, areaId: String, shopAreaId: String): Task<HttpsCallableResult>{
+        val data: HashMap<String, String> = HashMap()
+        data["itemprice"] = price
+        data["areaid"] = areaId
+        data["cityid"] = cityId
+        data["shopareaid"] = shopAreaId
+
+        return FirebaseFunctions.getInstance()
+            .getHttpsCallable("fare")
+            .call(data)
     }
 
     fun createOrder(): DatabaseReference{
@@ -114,11 +137,17 @@ class Database {
             .child("orders").child(orderId)
     }
 
-    fun changeShopStatus(shopId: String,status: String, userType: String): Task<Void>{
+    fun changeShopStatus(shopId: String,status: String): Task<Void>{
         return FirebaseDatabase.getInstance().reference
-            .child("users").child(userType)
+            .child("users").child(userType_VENDOR)
             .child(shopId).child("status")
             .setValue(status)
+    }
+
+    fun getShopStats(shopId: String): DatabaseReference{
+        return FirebaseDatabase.getInstance().reference
+            .child("users").child("shop")
+            .child(shopId).child("stats")
     }
 
     fun createItemInShop(shopId: String, map: HashMap<String, Any>, imagePath: Uri? = null): Task<Void> {
@@ -150,5 +179,14 @@ class Database {
         return FirebaseDatabase.getInstance().reference
             .child("orders").child(orderId)
             .child("status").setValue(status)
+    }
+
+    fun searchItemsinCity(query: String, cityId: String): Task<HttpsCallableResult>{
+        val data: HashMap<String, String> = HashMap()
+        data["query"] = query
+        data["cityid"] = cityId
+        return FirebaseFunctions.getInstance()
+            .getHttpsCallable("search")
+            .call(data)
     }
 }

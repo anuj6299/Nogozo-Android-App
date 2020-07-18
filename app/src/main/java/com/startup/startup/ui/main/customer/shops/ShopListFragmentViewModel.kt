@@ -8,7 +8,7 @@ import com.startup.startup.SessionManager
 import com.startup.startup.datamodels.Shop
 import com.startup.startup.network.Database
 import com.startup.startup.ui.main.DataResource
-import com.startup.startup.util.Constants.AREA_ID
+import com.startup.startup.util.Constants.CITY_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class ShopListFragmentViewModel
 
         shopList.value = DataResource.loading()
 
-        database.getShops(serviceId, sessionManager.currentSessionData[AREA_ID]!!)
+        database.getShops(serviceId, sessionManager.currentSessionData[CITY_ID]!!)
             .addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
                     shopList.value = DataResource.error(error.message)
@@ -46,7 +46,7 @@ class ShopListFragmentViewModel
                             val shops: ArrayList<Shop> = ArrayList()
                             for((key, value) in map){
                                 val shop = value as HashMap<String, String>
-                                shops.add(Shop(shop["shopname"]!!, key, shop["imageurl"], null))
+                                shops.add(Shop(shop["shopname"]!!, key, shop["imageurl"], null, shop["areaid"]!!))
                             }
                             shopList.postValue(DataResource.success(shops))
                         }else{

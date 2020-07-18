@@ -20,7 +20,6 @@ import com.startup.startup.R
 import com.startup.startup.datamodels.CustomerProfile
 import com.startup.startup.ui.BaseFragment
 import com.startup.startup.ui.ViewModelFactory
-import com.startup.startup.ui.auth.AuthResource
 import com.startup.startup.ui.main.MainActivity
 import com.startup.startup.ui.userdetails.UserDetailsActivity
 import com.startup.startup.util.Constants.PROFILE_LEVEL_0
