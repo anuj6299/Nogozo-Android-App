@@ -14,9 +14,9 @@ class Shop {
 
     var shopCurrentStatus: String? = null
 
-    var shopAreaId: String = "-1"
+    var shopAreaId: String? = "-1"
 
-    constructor(shopName: String, shopId: String, imageUrl: String?, shopCurrentStatus: String?, shopAreaId: String){
+    constructor(shopName: String, shopId: String, imageUrl: String?, shopCurrentStatus: String?, shopAreaId: String?){
         this.shopId = shopId
         this.shopName = shopName
         this.imageUrl = imageUrl
